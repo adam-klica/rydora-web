@@ -78,3 +78,62 @@ body > a[href*="nextjs"] {
   left: -9999px !important;
   bottom: -9999px !important;
 }
+
+/* Screenshot hover effect */
+.screenshot-overlay {
+  transition: transform 0.3s ease;
+}
+
+.group:hover .screenshot-overlay {
+  transform: translateY(0) !important;
+}
+
+/* Event image hover effect */
+.event-image {
+  transition: transform 0.5s ease;
+}
+
+.group:hover .event-image {
+  transform: scale(1.1);
+}
+
+/* Feature icon hover effect */
+.feature-icon {
+  transition: transform 0.3s ease;
+}
+
+.group:hover .feature-icon {
+  transform: scale(1.1);
+}
+
+/* Hero grid responsive */
+@media (min-width: 1024px) {
+  .hero-grid {
+    grid-template-columns: 1fr 1fr !important;
+  }
+}
+
+/* Header responsive */
+@media (min-width: 768px) {
+  .desktop-nav {
+    display: flex !important;
+  }
+  .desktop-actions {
+    display: flex !important;
+  }
+  .mobile-menu-button {
+    display: none !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .desktop-nav {
+    display: none !important;
+  }
+  .desktop-actions {
+    display: none !important;
+  }
+  .mobile-menu-button {
+    display: flex !important;
+  }
+}

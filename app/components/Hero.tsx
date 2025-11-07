@@ -13,7 +13,12 @@ function Container({
 }) {
   return (
     <div
-      className={`w-full px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 ${className}`}
+      className={className}
+      style={{
+        width: "100%",
+        paddingLeft: "clamp(16px, 4vw, 80px)",
+        paddingRight: "clamp(16px, 4vw, 80px)",
+      }}
     >
       {children}
     </div>
@@ -30,7 +35,14 @@ function Section({
   className?: string;
 }) {
   return (
-    <section id={id} className={`py-[50px] md:py-[50px] ${className}`}>
+    <section
+      id={id}
+      className={className}
+      style={{
+        paddingTop: "clamp(64px, 8vw, 128px)",
+        paddingBottom: "clamp(64px, 8vw, 128px)",
+      }}
+    >
       {children}
     </section>
   );
@@ -38,84 +50,158 @@ function Section({
 
 export default function Hero() {
   return (
-    <Section id="top" className="pt-32 md:pt-40 lg:pt-48 ">
+    <Section
+      id="top"
+      className=""
+      style={{
+        paddingTop: "clamp(96px, 12vw, 160px)",
+        paddingBottom: "clamp(64px, 8vw, 128px)",
+      }}
+    >
       <Container>
         <div
           style={{
-            paddingTop: "150px",
-            paddingLeft: "100px",
-            paddingRight: "100px",
+            display: "grid",
+            gridTemplateColumns: "1fr",
+            alignItems: "center",
+            gap: "clamp(32px, 6vw, 64px)",
           }}
-          className="grid items-center gap-12 lg:gap-20 lg:grid-cols-2"
+          className="hero-grid"
         >
           {/* Left Content */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, ease: "easeOut" }}
-            className="pl-4 sm:pl-6 md:pl-8 lg:pl-12"
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "clamp(24px, 4vw, 32px)",
+              paddingTop: "clamp(16px, 3vw, 32px)",
+              paddingBottom: "clamp(16px, 3vw, 32px)",
+            }}
           >
             {/* Badge */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-4 py-2 mb-6"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "8px",
+                borderRadius: "9999px",
+                border: "1px solid rgba(16, 185, 129, 0.3)",
+                backgroundColor: "rgba(16, 185, 129, 0.1)",
+                paddingLeft: "16px",
+                paddingRight: "16px",
+                paddingTop: "8px",
+                paddingBottom: "8px",
+                backdropFilter: "blur(8px)",
+                width: "fit-content",
+              }}
             >
-              <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-emerald-400" />
-              <span className="text-xs font-semibold text-emerald-300">
-                Built for enthusiasts
+              <span
+                style={{
+                  display: "inline-block",
+                  width: "8px",
+                  height: "8px",
+                  borderRadius: "50%",
+                  backgroundColor: "#6ee7b7",
+                  animation: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+                }}
+              />
+              <span
+                style={{
+                  fontSize: "0.75rem",
+                  fontWeight: "600",
+                  color: "#6ee7b7",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.05em",
+                }}
+              >
+                Built for Car Enthusiasts
               </span>
             </motion.div>
 
             {/* Heading */}
-            <motion.h1
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
-              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight tracking-tight mb-6"
             >
-              Your garage. Your crew. <br className="hidden sm:block" />
-              <span className="bg-gradient-to-r from-white to-emerald-300 bg-clip-text text-transparent">
-                One powerful app.
-              </span>
-            </motion.h1>
+              <h1
+                style={{
+                  fontSize: "clamp(2.5rem, 8vw, 5rem)",
+                  fontWeight: "700",
+                  lineHeight: "1.1",
+                  letterSpacing: "-0.02em",
+                  color: "#fff",
+                  margin: 0,
+                }}
+              >
+                Throttle Your{" "}
+                <span
+                  style={{
+                    background: "linear-gradient(to right, #6ee7b7, #67e8f9, #93c5fd)",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    backgroundClip: "text",
+                  }}
+                >
+                  Social Life
+                </span>
+              </h1>
+            </motion.div>
 
             {/* Description */}
-            <motion.p
-              style={{ marginBottom: "10px" }}
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
-              className="text-lg md:text-xl text-slate-300/90 leading-relaxed mb-10 max-w-2xl"
             >
-              Create a stunning garage, join clubs, plan events, and trade
-              parts—all with a clean, consistent UI.
-            </motion.p>
+              <p
+                style={{
+                  fontSize: "clamp(1rem, 2.5vw, 1.25rem)",
+                  color: "rgba(203, 213, 225, 0.9)",
+                  lineHeight: "1.75",
+                  maxWidth: "42rem",
+                  margin: 0,
+                }}
+              >
+                The ultimate social platform for car enthusiasts. Showcase your garage, join clubs, create events, buy & sell parts, and connect with car lovers worldwide.
+              </p>
+            </motion.div>
 
             {/* CTA Buttons */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.5 }}
-              className="flex flex-wrap items-center gap-4"
+              style={{
+                display: "flex",
+                flexWrap: "wrap",
+                alignItems: "center",
+                gap: "16px",
+                paddingTop: "16px",
+              }}
             >
               <motion.a
                 href="https://apps.apple.com/app/rydora"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group inline-flex items-center gap-4 rounded-xl bg-white font-semibold text-slate-900 shadow-lg transition-all duration-300 hover:bg-slate-100 hover:shadow-xl hover:scale-105 hover:-translate-y-1"
+                className="group inline-flex items-center gap-3 rounded-xl bg-white font-semibold text-slate-900 shadow-xl transition-all duration-300 hover:bg-slate-100 hover:shadow-2xl hover:scale-105"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.98 }}
                 style={{
-                  paddingLeft: "20px",
-                  paddingRight: "20px",
-                  paddingTop: "10px",
-                  paddingBottom: "10px",
+                  paddingLeft: "24px",
+                  paddingRight: "24px",
+                  paddingTop: "14px",
+                  paddingBottom: "14px",
                 }}
               >
-                <SiAppstore className="h-6 w-6 transition-transform group-hover:scale-110" />
-                <span>App Store</span>
+                <SiAppstore className="h-7 w-7 transition-transform group-hover:scale-110" />
+                <span className="text-lg">App Store</span>
                 <motion.svg
                   className="h-5 w-5 ml-1"
                   fill="none"
@@ -138,18 +224,18 @@ export default function Hero() {
                 href="https://play.google.com/store/apps/details?id=com.rydora"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group inline-flex items-center gap-4 rounded-xl bg-white font-semibold text-slate-900 shadow-lg transition-all duration-300 hover:bg-slate-100 hover:shadow-xl hover:scale-105 hover:-translate-y-1"
+                className="group inline-flex items-center gap-3 rounded-xl bg-white font-semibold text-slate-900 shadow-xl transition-all duration-300 hover:bg-slate-100 hover:shadow-2xl hover:scale-105"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.98 }}
                 style={{
-                  paddingLeft: "20px",
-                  paddingRight: "20px",
-                  paddingTop: "10px",
-                  paddingBottom: "10px",
+                  paddingLeft: "24px",
+                  paddingRight: "24px",
+                  paddingTop: "14px",
+                  paddingBottom: "14px",
                 }}
               >
-                <SiGoogleplay className="h-6 w-6 transition-transform group-hover:scale-110" />
-                <span>Google Play</span>
+                <SiGoogleplay className="h-7 w-7 transition-transform group-hover:scale-110" />
+                <span className="text-lg">Google Play</span>
                 <motion.svg
                   className="h-5 w-5 ml-1"
                   fill="none"
@@ -170,34 +256,85 @@ export default function Hero() {
             </motion.div>
           </motion.div>
 
-          {/* Right Content - Image */}
+          {/* Right Content - Phone Mockup with Screenshots */}
           <motion.div
             initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.3 }}
-            className="relative"
+            className="relative flex justify-center items-center"
           >
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8, delay: 0.5 }}
-              whileHover={{ scale: 1.02 }}
-              className="relative aspect-10/9 w-full rounded-3xl border border-slate-800 bg-slate-900/40 p-4 shadow-2xl"
-            >
-              <Image
-                src="/images/hero.png"
-                alt="Rydora preview"
-                fill
-                className="object-contain"
-                priority
-              />
-              <div className="pointer-events-none absolute inset-0 rounded-3xl ring-1 ring-white/5" />
-
-              {/* Animated glow effect */}
+            <div className="relative w-full max-w-sm">
+              {/* Phone Frame */}
               <motion.div
-                className="absolute inset-0 rounded-3xl bg-gradient-to-br from-emerald-500/10 via-transparent to-indigo-500/10"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.8, delay: 0.5 }}
+                className="relative mx-auto"
+                style={{
+                  width: "100%",
+                  maxWidth: "320px",
+                  aspectRatio: "9/19.5",
+                }}
+              >
+                {/* Phone Bezel */}
+                <div className="absolute inset-0 rounded-[3rem] bg-gradient-to-b from-slate-800 to-slate-900 p-2 shadow-2xl border-4 border-slate-700">
+                  {/* Notch */}
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-slate-900 rounded-b-2xl z-10" />
+                  
+                  {/* Screen */}
+                  <div className="relative w-full h-full rounded-[2.5rem] overflow-hidden bg-slate-900">
+                    <Image
+                      src="/ssIos/ios/Apple iPhone 14 Plus Screenshot 1.png"
+                      alt="Rydora App Preview"
+                      fill
+                      className="object-cover"
+                      priority
+                    />
+                  </div>
+                </div>
+
+                {/* Floating Screenshots */}
+                <motion.div
+                  className="absolute -right-8 top-1/4 hidden lg:block"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.8, delay: 0.8 }}
+                >
+                  <div className="relative w-48 rounded-2xl overflow-hidden shadow-2xl border-2 border-slate-700">
+                    <Image
+                      src="/ssIos/ios/Apple iPhone 14 Plus Screenshot 2.png"
+                      alt="Rydora Feature"
+                      width={192}
+                      height={416}
+                      className="object-cover"
+                    />
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  className="absolute -left-8 bottom-1/4 hidden lg:block"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.8, delay: 1 }}
+                >
+                  <div className="relative w-48 rounded-2xl overflow-hidden shadow-2xl border-2 border-slate-700">
+                    <Image
+                      src="/ssIos/ios/Apple iPhone 14 Plus Screenshot 3.png"
+                      alt="Rydora Feature"
+                      width={192}
+                      height={416}
+                      className="object-cover"
+                    />
+                  </div>
+                </motion.div>
+              </motion.div>
+
+              {/* Animated glow effects */}
+              <motion.div
+                className="absolute inset-0 -z-10 bg-gradient-to-r from-emerald-500/20 via-cyan-500/20 to-blue-500/20 rounded-full blur-3xl"
                 animate={{
                   opacity: [0.3, 0.6, 0.3],
+                  scale: [1, 1.1, 1],
                 }}
                 transition={{
                   duration: 4,
@@ -205,34 +342,7 @@ export default function Hero() {
                   ease: "easeInOut",
                 }}
               />
-            </motion.div>
-
-            {/* Floating decorative elements */}
-            <motion.div
-              className="absolute -top-6 -right-6 w-32 h-32 bg-emerald-500/20 rounded-full blur-3xl"
-              animate={{
-                y: [0, -20, 0],
-                scale: [1, 1.1, 1],
-              }}
-              transition={{
-                duration: 6,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-            />
-            <motion.div
-              className="absolute -bottom-6 -left-6 w-24 h-24 bg-indigo-500/20 rounded-full blur-3xl"
-              animate={{
-                y: [0, 20, 0],
-                scale: [1, 1.1, 1],
-              }}
-              transition={{
-                duration: 5,
-                repeat: Infinity,
-                ease: "easeInOut",
-                delay: 0.5,
-              }}
-            />
+            </div>
           </motion.div>
         </div>
       </Container>

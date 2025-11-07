@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Header from "./components/Header";
 import DownloadModal from "./components/DownloadModal";
 import Hero from "./components/Hero";
+import Screenshots from "./components/Screenshots";
 import Features from "./components/Features";
 import Gallery from "./components/Gallery";
 import About from "./components/About";
@@ -63,8 +64,9 @@ export default function Home() {
         onClose={() => setIsDownloadModalOpen(false)}
       />
 
-      <div className="flex flex-col gap-[100px]">
+      <div className="flex flex-col">
         <Hero />
+        <Screenshots />
         <Features />
         <Gallery />
         <About />
