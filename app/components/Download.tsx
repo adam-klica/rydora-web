@@ -7,9 +7,11 @@ import { ArrowRight } from "lucide-react";
 function Container({
   className = "",
   children,
+  style,
 }: {
   className?: string;
   children: React.ReactNode;
+  style?: React.CSSProperties;
 }) {
   return (
     <div
@@ -18,6 +20,7 @@ function Container({
         width: "100%",
         paddingLeft: "clamp(16px, 4vw, 80px)",
         paddingRight: "clamp(16px, 4vw, 80px)",
+        ...style,
       }}
     >
       {children}
@@ -29,10 +32,12 @@ function Section({
   id,
   children,
   className = "",
+  style,
 }: {
   id?: string;
   children: React.ReactNode;
   className?: string;
+  style?: React.CSSProperties;
 }) {
   return (
     <section
@@ -41,6 +46,7 @@ function Section({
       style={{
         paddingTop: "clamp(64px, 8vw, 128px)",
         paddingBottom: "clamp(64px, 8vw, 128px)",
+        ...style,
       }}
     >
       {children}

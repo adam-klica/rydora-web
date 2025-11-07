@@ -35,10 +35,12 @@ function Section({
   id,
   children,
   className = "",
+  style,
 }: {
   id?: string;
   children: React.ReactNode;
   className?: string;
+  style?: React.CSSProperties;
 }) {
   return (
     <section
@@ -47,6 +49,7 @@ function Section({
       style={{
         paddingTop: "clamp(64px, 8vw, 128px)",
         paddingBottom: "clamp(64px, 8vw, 128px)",
+        ...style,
       }}
     >
       {children}
