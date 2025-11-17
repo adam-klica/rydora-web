@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { SiInstagram, SiTiktok } from "react-icons/si";
 
 function Container({
@@ -20,6 +21,16 @@ function Container({
 }
 
 export default function Footer() {
+  const policyLinks = [
+    { href: "/privacy-policy", label: "Privacy Policy" },
+    { href: "/terms-and-conditions", label: "Terms & Conditions" },
+    { href: "/eula", label: "EULA" },
+    { href: "/community-guidelines", label: "Community Guidelines" },
+    { href: "/marketplace-policy", label: "Marketplace Policy" },
+    { href: "/content-moderation-policy", label: "Content Moderation Policy" },
+    { href: "/app-store-policies", label: "App Store Policies" },
+  ];
+
   return (
     <footer
       className="border-t transition-all duration-300"
@@ -32,40 +43,56 @@ export default function Footer() {
         paddingRight: "100px",
       }}
     >
-      <Container className="flex flex-col items-center justify-between gap-8 md:flex-row">
-        {/* Logo and Brand */}
-        <div className="flex items-center gap-3">
-          <a
-            href="#top"
-            className="flex items-center gap-3 transition-all duration-300 hover:opacity-80 hover:scale-105"
-          >
-            <span className="relative block" style={{ width: "40px", height: "40px" }}>
-              <Image
-                src="/images/logo.png"
-                alt="Rydora logo"
-                fill
-                className="object-contain"
-              />
-            </span>
-            <span
-              className="text-lg font-semibold"
-              style={{ color: "#fff" }}
+      <Container className="flex flex-col gap-8">
+        {/* Top Section: Logo, Links, Social */}
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
+          {/* Logo and Brand */}
+          <div className="flex items-center gap-3">
+            <a
+              href="#top"
+              className="flex items-center gap-3 transition-all duration-300 hover:opacity-80 hover:scale-105"
             >
-              Rydora
-            </span>
-          </a>
-        </div>
+              <span className="relative block" style={{ width: "40px", height: "40px" }}>
+                <Image
+                  src="/images/logo.png"
+                  alt="Rydora logo"
+                  fill
+                  className="object-contain"
+                />
+              </span>
+              <span
+                className="text-lg font-semibold"
+                style={{ color: "#fff" }}
+              >
+                Rydora
+              </span>
+            </a>
+          </div>
 
-        {/* Copyright */}
-        <p
-          className="text-sm text-center"
-          style={{ color: "rgba(203, 213, 225, 0.7)" }}
-        >
-          &copy; {new Date().getFullYear()} Rydora. All rights reserved.
-        </p>
+          {/* Policy Links */}
+          <div className="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-6">
+            <div className="flex flex-wrap gap-x-4 gap-y-2">
+              {policyLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="text-sm transition-all duration-300 hover:opacity-80"
+                  style={{ color: "rgba(203, 213, 225, 0.7)" }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.color = "#fff";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.color = "rgba(203, 213, 225, 0.7)";
+                  }}
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+          </div>
 
-        {/* Social Links */}
-        <div className="flex items-center gap-3">
+          {/* Social Links */}
+          <div className="flex items-center gap-3">
           <a
             href="https://instagram.com/rydora.me"
             target="_blank"
@@ -124,6 +151,17 @@ export default function Footer() {
           >
             <SiTiktok style={{ width: "20px", height: "20px" }} />
           </a>
+        </div>
+        </div>
+
+        {/* Bottom Section: Copyright */}
+        <div className="border-t pt-6" style={{ borderTopColor: "rgba(30, 41, 59, 0.3)" }}>
+          <p
+            className="text-sm text-center"
+            style={{ color: "rgba(203, 213, 225, 0.7)" }}
+          >
+            &copy; {new Date().getFullYear()} Rydora. All rights reserved.
+          </p>
         </div>
       </Container>
     </footer>
