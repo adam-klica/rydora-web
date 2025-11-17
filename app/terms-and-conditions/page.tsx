@@ -278,8 +278,6 @@ For support:
   return (
     <PolicyLayout
       title="Terms & Conditions"
-      lastUpdated="11.17.25"
-      effectiveDate="11.17.25"
     >
       {content}
     </PolicyLayout>

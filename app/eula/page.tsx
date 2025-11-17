@@ -284,8 +284,6 @@ For support:
   return (
     <PolicyLayout
       title="End-User License Agreement (EULA)"
-      lastUpdated="12.17.25"
-      effectiveDate="12.17.25"
     >
       {content}
     </PolicyLayout>

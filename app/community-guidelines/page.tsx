@@ -338,8 +338,6 @@ For general support:
   return (
     <PolicyLayout
       title="Community Guidelines"
-      lastUpdated="[DATE]"
-      effectiveDate="[DATE]"
     >
       {content}
     </PolicyLayout>

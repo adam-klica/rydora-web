@@ -486,8 +486,6 @@ For legal matters:
   return (
     <PolicyLayout
       title="Content Moderation Policy"
-      lastUpdated="11.17.25"
-      effectiveDate="11.17.25"
     >
       {content}
     </PolicyLayout>

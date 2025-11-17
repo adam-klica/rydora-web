@@ -330,8 +330,6 @@ For legal matters:
   return (
     <PolicyLayout
       title="App Store Compliance Policies"
-      lastUpdated="11.17.25"
-     effectiveDate="11.17.25"
     >
       {content}
     </PolicyLayout>

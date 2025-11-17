@@ -340,8 +340,6 @@ For legal matters:
   return (
     <PolicyLayout
       title="Privacy Policy"
-      lastUpdated="11.17.25"
-      effectiveDate="11.17.25"
     >
       {content}
     </PolicyLayout>

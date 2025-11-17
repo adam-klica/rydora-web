@@ -5,8 +5,8 @@ import PolicyContent from "./PolicyContent";
 
 interface PolicyLayoutProps {
   title: string;
-  lastUpdated: string;
-  effectiveDate: string;
+  lastUpdated?: string;
+  effectiveDate?: string;
   children: string;
 }
 
@@ -72,60 +72,6 @@ export default function PolicyLayout({
             }}>
               {title}
             </h1>
-            <div style={{ 
-              display: "flex", 
-              flexDirection: "column", 
-              gap: "16px", 
-              fontSize: "14px",
-              alignItems: "center",
-              justifyContent: "center",
-              paddingTop: "8px"
-            }}>
-              <div 
-                style={{ 
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  paddingLeft: "16px",
-                  paddingRight: "16px",
-                  paddingTop: "8px",
-                  paddingBottom: "8px",
-                  borderRadius: "8px",
-                  backgroundColor: "rgba(30, 41, 59, 0.4)", 
-                  color: "rgba(203, 213, 225, 0.8)",
-                  border: "1px solid rgba(51, 65, 85, 0.3)",
-                  transition: "opacity 0.2s ease",
-                  cursor: "pointer"
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.opacity = "0.9"}
-                onMouseLeave={(e) => e.currentTarget.style.opacity = "1"}
-              >
-                <span style={{ fontWeight: "600", color: "rgba(203, 213, 225, 0.9)" }}>Last Updated:</span>
-                <span>{lastUpdated}</span>
-              </div>
-              <div 
-                style={{ 
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  paddingLeft: "16px",
-                  paddingRight: "16px",
-                  paddingTop: "8px",
-                  paddingBottom: "8px",
-                  borderRadius: "8px",
-                  backgroundColor: "rgba(30, 41, 59, 0.4)", 
-                  color: "rgba(203, 213, 225, 0.8)",
-                  border: "1px solid rgba(51, 65, 85, 0.3)",
-                  transition: "opacity 0.2s ease",
-                  cursor: "pointer"
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.opacity = "0.9"}
-                onMouseLeave={(e) => e.currentTarget.style.opacity = "1"}
-              >
-                <span style={{ fontWeight: "600", color: "rgba(203, 213, 225, 0.9)" }}>Effective Date:</span>
-                <span>{effectiveDate}</span>
-              </div>
-            </div>
           </div>
 
           {/* Content Section */}
