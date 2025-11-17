@@ -141,26 +141,43 @@ body > a[href*="nextjs"] {
 /* Policy Content Styling */
 .policy-content h2 {
   scroll-margin-top: 100px;
+  word-spacing: 0.05em;
 }
 
 .policy-content h2:hover {
-  opacity: 0.9;
+  opacity: 0.95;
   transition: opacity 0.2s ease;
+}
+
+.policy-content h3 {
+  margin-top: 3rem !important;
+  word-spacing: 0.03em;
 }
 
 .policy-content h3:hover,
 .policy-content h4:hover {
-  opacity: 0.9;
+  opacity: 0.95;
   transition: opacity 0.2s ease;
+}
+
+.policy-content h4 {
+  margin-top: 2.5rem !important;
 }
 
 .policy-content p {
   text-align: justify;
   text-justify: inter-word;
+  margin-bottom: 2rem !important;
+}
+
+.policy-content ul {
+  margin-top: 1.5rem !important;
+  margin-bottom: 2.5rem !important;
 }
 
 .policy-content ul li {
   transition: transform 0.2s ease, opacity 0.2s ease;
+  padding-left: 0.5rem;
 }
 
 .policy-content ul li:hover {
@@ -168,8 +185,20 @@ body > a[href*="nextjs"] {
   opacity: 1;
 }
 
+.policy-content > div {
+  margin-bottom: 1rem;
+}
+
 @media (max-width: 768px) {
   .policy-content p {
     text-align: left;
+  }
+  
+  .policy-content h2 {
+    font-size: 1.875rem !important;
+  }
+  
+  .policy-content h3 {
+    font-size: 1.5rem !important;
   }
 }

@@ -21,16 +21,17 @@ export default function PolicyContent({ content }: PolicyContentProps) {
       const paraText = currentParagraph.join(' ');
       if (paraText.length > 0) {
         formattedContent.push(
-          <p 
-            key={`para-${formattedContent.length}`} 
-            className="mb-6 leading-relaxed"
-            style={{ 
-              color: "rgba(203, 213, 225, 0.9)",
-              fontSize: "16px",
-            }}
-          >
-            {paraText}
-          </p>
+        <p 
+          key={`para-${formattedContent.length}`} 
+          className="mb-8 leading-relaxed"
+          style={{ 
+            color: "rgba(203, 213, 225, 0.9)",
+            fontSize: "16px",
+            lineHeight: "1.9",
+          }}
+        >
+          {paraText}
+        </p>
         );
       }
       currentParagraph = [];
@@ -42,7 +43,7 @@ export default function PolicyContent({ content }: PolicyContentProps) {
       formattedContent.push(
         <ul 
           key={`list-${formattedContent.length}`} 
-          className="mb-8 ml-2 space-y-3 list-none"
+          className="mb-10 ml-2 space-y-4 list-none"
           style={{ color: "rgba(203, 213, 225, 0.9)" }}
         >
           {listItems.map((item, idx) => (
@@ -85,17 +86,19 @@ export default function PolicyContent({ content }: PolicyContentProps) {
       flushParagraph();
       const isFirstSection = formattedContent.length === 0;
       formattedContent.push(
-        <h2 
-          key={`heading-${index}`} 
-          className={`text-3xl font-bold ${isFirstSection ? 'mt-4' : 'mt-16'} mb-6 pb-4 border-b`}
-          style={{ 
-            color: "#fff",
-            borderBottomColor: "rgba(51, 65, 85, 0.6)",
-            borderBottomWidth: "1px",
-          }}
-        >
-          {line}
-        </h2>
+        <div key={`heading-wrapper-${index}`} className={`${isFirstSection ? 'mt-4' : 'mt-20'} mb-8`}>
+          <h2 
+            className="text-3xl md:text-4xl font-bold text-center pb-6 border-b"
+            style={{ 
+              color: "#fff",
+              borderBottomColor: "rgba(51, 65, 85, 0.6)",
+              borderBottomWidth: "2px",
+              letterSpacing: "0.02em",
+            }}
+          >
+            {line}
+          </h2>
+        </div>
       );
       return;
     }
@@ -106,13 +109,17 @@ export default function PolicyContent({ content }: PolicyContentProps) {
       flushList();
       flushParagraph();
       formattedContent.push(
-        <h3 
-          key={`subheading-${index}`} 
-          className="text-xl font-semibold mt-10 mb-5"
-          style={{ color: "#fff" }}
-        >
-          {line}
-        </h3>
+        <div key={`subheading-wrapper-${index}`} className="mt-12 mb-6">
+          <h3 
+            className="text-xl md:text-2xl font-semibold"
+            style={{ 
+              color: "#fff",
+              letterSpacing: "0.01em",
+            }}
+          >
+            {line}
+          </h3>
+        </div>
       );
       return;
     }
@@ -123,13 +130,17 @@ export default function PolicyContent({ content }: PolicyContentProps) {
       flushList();
       flushParagraph();
       formattedContent.push(
-        <h4 
-          key={`subsubheading-${index}`} 
-          className="text-lg font-semibold mt-8 mb-4"
-          style={{ color: "rgba(255, 255, 255, 0.95)" }}
-        >
-          {line}
-        </h4>
+        <div key={`subsubheading-wrapper-${index}`} className="mt-10 mb-5">
+          <h4 
+            className="text-lg md:text-xl font-semibold"
+            style={{ 
+              color: "rgba(255, 255, 255, 0.95)",
+              letterSpacing: "0.01em",
+            }}
+          >
+            {line}
+          </h4>
+        </div>
       );
       return;
     }
@@ -143,10 +154,11 @@ export default function PolicyContent({ content }: PolicyContentProps) {
       formattedContent.push(
         <p 
           key={`label-${index}`} 
-          className="mb-4 font-semibold"
+          className="mb-6 font-semibold"
           style={{ 
             color: "rgba(255, 255, 255, 0.95)",
-            fontSize: "17px",
+            fontSize: "18px",
+            letterSpacing: "0.01em",
           }}
         >
           {line}

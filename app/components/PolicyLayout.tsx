@@ -77,11 +77,11 @@ export default function PolicyLayout({
           }}
         >
           <div 
-            className="rounded-xl p-8 md:p-12 transition-all duration-300" 
+            className="rounded-xl p-8 md:p-12 lg:p-16 transition-all duration-300" 
             style={{ 
-              backgroundColor: "rgba(7, 34, 54, 0.2)", 
-              border: "1px solid rgba(51, 65, 85, 0.2)",
-              boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+              backgroundColor: "rgba(7, 34, 54, 0.25)", 
+              border: "1px solid rgba(51, 65, 85, 0.3)",
+              boxShadow: "0 8px 16px rgba(0, 0, 0, 0.15)",
             }}
           >
             <PolicyContent content={children} />
