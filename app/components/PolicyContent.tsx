@@ -1,5 +1,7 @@
 "use client";
 
+import React from "react";
+
 interface PolicyContentProps {
   content: string;
 }
@@ -8,7 +10,7 @@ export default function PolicyContent({ content }: PolicyContentProps) {
   // Split content into lines
   const lines = content.split('\n').map(line => line.trim()).filter(line => line !== '');
   
-  const formattedContent: JSX.Element[] = [];
+  const formattedContent: React.ReactElement[] = [];
   let currentParagraph: string[] = [];
   let listItems: string[] = [];
   let inList = false;
