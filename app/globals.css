@@ -137,3 +137,39 @@ body > a[href*="nextjs"] {
     display: flex !important;
   }
 }
+
+/* Policy Content Styling */
+.policy-content h2 {
+  scroll-margin-top: 100px;
+}
+
+.policy-content h2:hover {
+  opacity: 0.9;
+  transition: opacity 0.2s ease;
+}
+
+.policy-content h3:hover,
+.policy-content h4:hover {
+  opacity: 0.9;
+  transition: opacity 0.2s ease;
+}
+
+.policy-content p {
+  text-align: justify;
+  text-justify: inter-word;
+}
+
+.policy-content ul li {
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.policy-content ul li:hover {
+  transform: translateX(4px);
+  opacity: 1;
+}
+
+@media (max-width: 768px) {
+  .policy-content p {
+    text-align: left;
+  }
+}

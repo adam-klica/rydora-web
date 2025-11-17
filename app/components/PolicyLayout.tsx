@@ -1,12 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import PolicyContent from "./PolicyContent";
 
 interface PolicyLayoutProps {
   title: string;
   lastUpdated: string;
   effectiveDate: string;
-  children: React.ReactNode;
+  children: string;
 }
 
 export default function PolicyLayout({
@@ -34,35 +35,56 @@ export default function PolicyLayout({
 
       {/* Main Content */}
       <main className="w-full px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 py-12 max-w-5xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4" style={{ color: "#fff" }}>
+        {/* Header Section */}
+        <div className="mb-12 pb-8 border-b" style={{ borderBottomColor: "rgba(51, 65, 85, 0.4)" }}>
+          <h1 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
             {title}
           </h1>
-          <div className="flex flex-col sm:flex-row gap-4 text-sm" style={{ color: "rgba(203, 213, 225, 0.7)" }}>
-            <div>
-              <strong>Last Updated:</strong> {lastUpdated}
+          <div className="flex flex-col sm:flex-row gap-4 text-sm">
+            <div 
+              className="flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 hover:opacity-90" 
+              style={{ 
+                backgroundColor: "rgba(30, 41, 59, 0.4)", 
+                color: "rgba(203, 213, 225, 0.8)",
+                border: "1px solid rgba(51, 65, 85, 0.3)",
+              }}
+            >
+              <span className="font-semibold" style={{ color: "rgba(203, 213, 225, 0.9)" }}>Last Updated:</span>
+              <span>{lastUpdated}</span>
             </div>
-            <div>
-              <strong>Effective Date:</strong> {effectiveDate}
+            <div 
+              className="flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 hover:opacity-90" 
+              style={{ 
+                backgroundColor: "rgba(30, 41, 59, 0.4)", 
+                color: "rgba(203, 213, 225, 0.8)",
+                border: "1px solid rgba(51, 65, 85, 0.3)",
+              }}
+            >
+              <span className="font-semibold" style={{ color: "rgba(203, 213, 225, 0.9)" }}>Effective Date:</span>
+              <span>{effectiveDate}</span>
             </div>
           </div>
         </div>
 
+        {/* Content Section */}
         <div
           className="prose prose-invert max-w-none"
           style={{
             color: "rgba(203, 213, 225, 0.9)",
             lineHeight: "1.8",
+            fontSize: "16px",
+            letterSpacing: "0.01em",
           }}
         >
           <div 
-            className="whitespace-pre-wrap"
-            style={{
-              fontSize: "16px",
-              letterSpacing: "0.01em",
+            className="rounded-xl p-8 md:p-12 transition-all duration-300" 
+            style={{ 
+              backgroundColor: "rgba(7, 34, 54, 0.2)", 
+              border: "1px solid rgba(51, 65, 85, 0.2)",
+              boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
             }}
           >
-            {children}
+            <PolicyContent content={children} />
           </div>
         </div>
       </main>
