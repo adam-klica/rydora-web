@@ -34,57 +34,133 @@ export default function PolicyLayout({
       </header>
 
       {/* Main Content */}
-      <main className="w-full px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 py-12 max-w-5xl mx-auto">
-        {/* Header Section */}
-        <div className="mb-12 pb-8 border-b" style={{ borderBottomColor: "rgba(51, 65, 85, 0.4)" }}>
-          <h1 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
-            {title}
-          </h1>
-          <div className="flex flex-col sm:flex-row gap-4 text-sm">
-            <div 
-              className="flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 hover:opacity-90" 
-              style={{ 
-                backgroundColor: "rgba(30, 41, 59, 0.4)", 
-                color: "rgba(203, 213, 225, 0.8)",
-                border: "1px solid rgba(51, 65, 85, 0.3)",
-              }}
-            >
-              <span className="font-semibold" style={{ color: "rgba(203, 213, 225, 0.9)" }}>Last Updated:</span>
-              <span>{lastUpdated}</span>
-            </div>
-            <div 
-              className="flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 hover:opacity-90" 
-              style={{ 
-                backgroundColor: "rgba(30, 41, 59, 0.4)", 
-                color: "rgba(203, 213, 225, 0.8)",
-                border: "1px solid rgba(51, 65, 85, 0.3)",
-              }}
-            >
-              <span className="font-semibold" style={{ color: "rgba(203, 213, 225, 0.9)" }}>Effective Date:</span>
-              <span>{effectiveDate}</span>
+      <main style={{ 
+        width: "100%", 
+        paddingTop: "48px", 
+        paddingBottom: "48px",
+        paddingLeft: "24px",
+        paddingRight: "24px"
+      }}>
+        <div style={{ 
+          maxWidth: "1280px", 
+          margin: "0 auto", 
+          paddingLeft: "32px", 
+          paddingRight: "32px",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center"
+        }}>
+          {/* Header Section */}
+          <div style={{ 
+            marginBottom: "48px", 
+            paddingBottom: "32px", 
+            paddingTop: "24px",
+            paddingLeft: "24px",
+            paddingRight: "24px",
+            borderBottom: "1px solid rgba(51, 65, 85, 0.4)",
+            width: "100%",
+            textAlign: "center"
+          }}>
+            <h1 style={{
+              fontSize: "2.25rem",
+              fontWeight: "bold",
+              marginBottom: "24px",
+              background: "linear-gradient(to right, #ffffff, #cbd5e1)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundClip: "text"
+            }}>
+              {title}
+            </h1>
+            <div style={{ 
+              display: "flex", 
+              flexDirection: "column", 
+              gap: "16px", 
+              fontSize: "14px",
+              alignItems: "center",
+              justifyContent: "center",
+              paddingTop: "8px"
+            }}>
+              <div 
+                style={{ 
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  paddingLeft: "16px",
+                  paddingRight: "16px",
+                  paddingTop: "8px",
+                  paddingBottom: "8px",
+                  borderRadius: "8px",
+                  backgroundColor: "rgba(30, 41, 59, 0.4)", 
+                  color: "rgba(203, 213, 225, 0.8)",
+                  border: "1px solid rgba(51, 65, 85, 0.3)",
+                  transition: "opacity 0.2s ease",
+                  cursor: "pointer"
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.opacity = "0.9"}
+                onMouseLeave={(e) => e.currentTarget.style.opacity = "1"}
+              >
+                <span style={{ fontWeight: "600", color: "rgba(203, 213, 225, 0.9)" }}>Last Updated:</span>
+                <span>{lastUpdated}</span>
+              </div>
+              <div 
+                style={{ 
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  paddingLeft: "16px",
+                  paddingRight: "16px",
+                  paddingTop: "8px",
+                  paddingBottom: "8px",
+                  borderRadius: "8px",
+                  backgroundColor: "rgba(30, 41, 59, 0.4)", 
+                  color: "rgba(203, 213, 225, 0.8)",
+                  border: "1px solid rgba(51, 65, 85, 0.3)",
+                  transition: "opacity 0.2s ease",
+                  cursor: "pointer"
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.opacity = "0.9"}
+                onMouseLeave={(e) => e.currentTarget.style.opacity = "1"}
+              >
+                <span style={{ fontWeight: "600", color: "rgba(203, 213, 225, 0.9)" }}>Effective Date:</span>
+                <span>{effectiveDate}</span>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Content Section */}
-        <div
-          className="prose prose-invert max-w-none"
-          style={{
-            color: "rgba(203, 213, 225, 0.9)",
-            lineHeight: "1.8",
-            fontSize: "16px",
-            letterSpacing: "0.01em",
-          }}
-        >
-          <div 
-            className="rounded-xl p-8 md:p-12 lg:p-16 transition-all duration-300" 
-            style={{ 
-              backgroundColor: "rgba(7, 34, 54, 0.25)", 
-              border: "1px solid rgba(51, 65, 85, 0.3)",
-              boxShadow: "0 8px 16px rgba(0, 0, 0, 0.15)",
+          {/* Content Section */}
+          <div
+            style={{
+              color: "rgba(203, 213, 225, 0.9)",
+              lineHeight: "1.8",
+              fontSize: "16px",
+              letterSpacing: "0.01em",
+              width: "100%",
+              maxWidth: "100%",
+              display: "flex",
+              justifyContent: "center",
+              paddingLeft: "16px",
+              paddingRight: "16px"
             }}
           >
-            <PolicyContent content={children} />
+            <div 
+              style={{ 
+                borderRadius: "12px",
+                paddingTop: "32px",
+                paddingBottom: "32px",
+                paddingLeft: "48px",
+                paddingRight: "48px",
+                backgroundColor: "rgba(7, 34, 54, 0.25)", 
+                border: "1px solid rgba(51, 65, 85, 0.3)",
+                boxShadow: "0 8px 16px rgba(0, 0, 0, 0.15)",
+                width: "100%",
+                maxWidth: "100%",
+                margin: "0 auto",
+                transition: "all 0.3s ease"
+              }}
+            >
+              <PolicyContent content={children} />
+            </div>
           </div>
         </div>
       </main>

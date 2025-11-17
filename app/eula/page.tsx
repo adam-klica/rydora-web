@@ -5,9 +5,9 @@ export default function EULAPage() {
 
 Rydora Mobile Application
 
-Last Updated: 11.17.25
+Last Updated: 12.17.25
 
-Effective Date: 11.17.25
+Effective Date: 12.17.25
 
 Jurisdiction: Montenegro
 
@@ -99,9 +99,27 @@ use content for platform operation, improvement, safety, legal compliance, and p
 
 4.4. Content involving minors or illegal acts will be removed and may be reported to authorities.
 
-5. PROHIBITED USE
+5. PROHIBITED USE AND ZERO TOLERANCE POLICY
 
-You may not use the Application to:
+5.1. ZERO TOLERANCE FOR OBJECTIONABLE CONTENT AND ABUSIVE USERS
+
+Rydora maintains a strict zero tolerance policy for objectionable content and abusive users. There is absolutely no tolerance for:
+
+sexually explicit material, nudity, or adult content
+
+violence, threats, harassment, or bullying
+
+hate speech, discrimination, or extremist content
+
+illegal activities or content promoting illegal acts
+
+fraud, scams, impersonation, or deceptive practices
+
+content involving minors in any inappropriate context
+
+any content that violates applicable laws or community standards
+
+5.2. You may not use the Application to:
 
 upload illegal, harmful, abusive, or objectionable content
 
@@ -117,25 +135,51 @@ conduct or promote unlawful activities
 
 use the Application in ways that interfere with its proper operation
 
+5.3. Violations of this policy will result in immediate content removal and permanent account termination. Rydora reserves the right to report violations to law enforcement authorities.
+
 6. AUTOMATED MODERATION & DATA PROCESSING
 
 6.1. The Application uses automated content analysis tools, including but not limited to:
 
-Google Cloud Vision SafeSearch
+Google Cloud Vision SafeSearch for automatic detection and blocking of inappropriate content
 
 internal machine learning classifiers
 
 behavioral analysis systems
 
-6.2. These tools scan uploaded content to:
+6.2. These tools automatically scan and analyze all uploaded content in real-time to:
 
-detect nudity, violence, graphic content, hate symbols, weapons, exploitation
+detect and prevent nudity, violence, graphic content, hate symbols, weapons, exploitation
+
+automatically block inappropriate content before it is published
 
 prevent fraud, spam, and account abuse
 
 enforce Community Guidelines and legal obligations
 
-6.3. By using the Application, you expressly consent to automated content scanning and moderation.
+6.3. By using the Application, you expressly consent to automated content scanning and moderation. Inappropriate content detected by Google Cloud Vision SafeSearch and other automated systems will be automatically rejected and will not be allowed on our servers.
+
+6.4. CONTENT MODERATION RESPONSE TIME
+
+Rydora commits to acting on reports of objectionable content within 24 hours. Upon receiving a report:
+
+Rydora will review the reported content within 24 hours
+
+If the content violates this Agreement or Community Guidelines, it will be immediately removed
+
+The user who provided the offending content will be permanently ejected and banned from the Application
+
+Rydora may report serious violations to appropriate law enforcement authorities
+
+6.5. REPORTING MECHANISM
+
+Users may report objectionable content or abusive users through:
+
+in-app reporting tools
+
+email to support@rydora.me
+
+All reports are taken seriously and will be reviewed promptly in accordance with our 24-hour response commitment.
 
 7. MARKETPLACE USE
 
@@ -240,8 +284,8 @@ For support:
   return (
     <PolicyLayout
       title="End-User License Agreement (EULA)"
-      lastUpdated="11.17.25"
-      effectiveDate="11.17.25"
+      lastUpdated="12.17.25"
+      effectiveDate="12.17.25"
     >
       {content}
     </PolicyLayout>
