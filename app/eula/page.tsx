@@ -5,10 +5,6 @@ export default function EULAPage() {
 
 Rydora Mobile Application
 
-Last Updated: 12.17.25
-
-Effective Date: 12.17.25
-
 Jurisdiction: Montenegro
 
 RYDORA – END-USER LICENSE AGREEMENT (EULA)

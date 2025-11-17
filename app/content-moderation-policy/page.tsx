@@ -3,10 +3,6 @@ import PolicyLayout from "../components/PolicyLayout";
 export default function ContentModerationPolicyPage() {
   const content = `RYDORA CONTENT MODERATION POLICY
 
-Last Updated: 11.17.25
-
-Effective Date: 11.17.25
-
 Applies Globally
 
 Jurisdiction Base: Montenegro (ME)

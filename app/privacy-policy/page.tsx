@@ -3,10 +3,6 @@ import PolicyLayout from "../components/PolicyLayout";
 export default function PrivacyPolicyPage() {
   const content = `RYDORA – PRIVACY POLICY
 
-Last Updated: 11.17.25
-
-Effective Date: 11.17.25
-
 Jurisdiction: Montenegro (ME), with global applicability
 
 1. INTRODUCTION

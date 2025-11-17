@@ -3,10 +3,6 @@ import PolicyLayout from "../components/PolicyLayout";
 export default function TermsAndConditionsPage() {
   const content = `RYDORA – TERMS & CONDITIONS
 
-Last Updated: 11.17.25
-
-Effective Date: 11.17.25
-
 Jurisdiction: Montenegro (ME)
 
 1. INTRODUCTION

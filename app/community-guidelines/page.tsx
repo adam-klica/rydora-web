@@ -3,10 +3,6 @@ import PolicyLayout from "../components/PolicyLayout";
 export default function CommunityGuidelinesPage() {
   const content = `RYDORA COMMUNITY GUIDELINES 
 
-Last Updated: [DATE]
-
-Effective Date: [DATE]
-
 Jurisdiction: Montenegro
 
 RYDORA – COMMUNITY GUIDELINES (LEGAL VERSION)

@@ -3,10 +3,6 @@ import PolicyLayout from "../components/PolicyLayout";
 export default function AppStorePoliciesPage() {
   const content = `RYDORA APP STORE COMPLIANCE POLICIES
 
-Last Updated: 11.17.25
-
-Effective Date: 11.17.25
-
 Applies to: Google Play & Apple App Store Distribution
 
 RYDORA – MOBILE APP STORE COMPLIANCE POLICIES

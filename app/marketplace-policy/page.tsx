@@ -3,10 +3,6 @@ import PolicyLayout from "../components/PolicyLayout";
 export default function MarketplacePolicyPage() {
   const content = `RYDORA MARKETPLACE POLICY (FULL LEGAL VERSION)
 
-Last Updated: 11.17.25
-
-Effective Date: 11.17.25
-
 Jurisdiction: Montenegro, global applicability
 
 RYDORA – MARKETPLACE POLICY
