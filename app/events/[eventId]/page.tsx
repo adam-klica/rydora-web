@@ -60,10 +60,10 @@ export default function EventPage() {
 
   if (loading) {
     return (
-      <div style={styles.container}>
-        <div style={styles.loadingContainer}>
-          <div style={styles.spinner}></div>
-          <p style={styles.loadingText}>Loading event...</p>
+      <div style={styles.pageContainer}>
+        <div style={styles.loadingWrapper}>
+          <div style={styles.loadingSpinner}></div>
+          <p style={styles.loadingMessage}>Loading event details...</p>
         </div>
       </div>
     );
@@ -71,12 +71,13 @@ export default function EventPage() {
 
   if (error || !event) {
     return (
-      <div style={styles.container}>
-        <div style={styles.errorCard}>
-          <div style={styles.errorIcon}>⚠️</div>
-          <h1 style={styles.errorTitle}>Event Not Found</h1>
-          <p style={styles.errorText}>
-            {error || "The event you are looking for does not exist."}
+      <div style={styles.pageContainer}>
+        <div style={styles.errorWrapper}>
+          <div style={styles.errorEmoji}>😕</div>
+          <h1 style={styles.errorHeading}>Event Not Found</h1>
+          <p style={styles.errorMessage}>
+            {error ||
+              "The event you're looking for doesn't exist or has been removed."}
           </p>
         </div>
       </div>
@@ -108,163 +109,228 @@ export default function EventPage() {
     (event.usersComing || 0) + (event.usersMaybeComing || 0);
 
   return (
-    <div style={styles.container}>
-      {/* Hero Image Section */}
-      {event.imageUrl && (
-        <div style={styles.heroSection}>
-          <img
-            src={event.imageUrl}
-            alt={event.title}
-            style={styles.heroImage}
-          />
-          <div style={styles.heroOverlay}></div>
-        </div>
-      )}
-
-      <div style={styles.contentWrapper}>
-        {/* Main Content Card */}
-        <div style={styles.mainCard}>
-          {/* Header Section */}
-          <div style={styles.headerSection}>
-            <div style={styles.titleRow}>
-              <h1 style={styles.title}>{event.title}</h1>
-              <div style={styles.badgesRow}>
+    <>
+      <style>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+        @keyframes pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.5; }
+        }
+        .fade-in {
+          animation: fadeIn 0.6s ease-out;
+        }
+      `}</style>
+      <div style={styles.pageContainer}>
+        {/* Hero Banner with Image */}
+        {event.imageUrl ? (
+          <div style={styles.heroBanner}>
+            <img
+              src={event.imageUrl}
+              alt={event.title}
+              style={styles.heroImage}
+            />
+            <div style={styles.heroGradient}></div>
+            <div style={styles.heroContent}>
+              <div style={styles.heroBadges}>
                 {event.eventType && (
-                  <div style={styles.categoryBadge}>
-                    <span style={styles.categoryIcon}>🏷️</span>
-                    <span style={styles.categoryText}>{event.eventType}</span>
+                  <div style={styles.heroCategoryTag}>
+                    <span style={styles.heroCategoryIcon}>🎯</span>
+                    <span style={styles.heroCategoryLabel}>
+                      {event.eventType}
+                    </span>
                   </div>
                 )}
                 {event.isFree ? (
-                  <div style={styles.priceBadgeFree}>
-                    <span style={styles.priceTextFree}>FREE</span>
+                  <div style={styles.heroFreeTag}>
+                    <span style={styles.heroFreeText}>FREE EVENT</span>
                   </div>
                 ) : event.price != null ? (
-                  <div style={styles.priceBadge}>
-                    <span style={styles.priceText}>
+                  <div style={styles.heroPriceTag}>
+                    <span style={styles.heroPriceText}>
                       €{event.price.toFixed(2)}
                     </span>
                   </div>
                 ) : null}
               </div>
+              <h1 style={styles.heroTitle}>{event.title}</h1>
             </div>
           </div>
-
-          {/* Event Details Grid */}
-          <div style={styles.detailsGrid}>
-            {eventDate && (
-              <div style={styles.detailCard}>
-                <div style={styles.detailIcon}>📅</div>
-                <div style={styles.detailContent}>
-                  <div style={styles.detailLabel}>Date</div>
-                  <div style={styles.detailValue}>{eventDate}</div>
-                  {eventTime && (
-                    <div style={styles.detailSubtext}>{eventTime}</div>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {fullLocation && (
-              <div style={styles.detailCard}>
-                <div style={styles.detailIcon}>📍</div>
-                <div style={styles.detailContent}>
-                  <div style={styles.detailLabel}>Location</div>
-                  <div style={styles.detailValue}>{fullLocation}</div>
-                </div>
-              </div>
-            )}
-
-            {totalAttendees > 0 && (
-              <div style={styles.detailCard}>
-                <div style={styles.detailIcon}>👥</div>
-                <div style={styles.detailContent}>
-                  <div style={styles.detailLabel}>Attendees</div>
-                  <div style={styles.detailValue}>
-                    {event.usersComing || 0} going
-                    {event.usersMaybeComing
-                      ? `, ${event.usersMaybeComing} maybe`
-                      : ""}
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Description */}
-          {event.description && (
-            <div style={styles.descriptionSection}>
-              <h2 style={styles.sectionTitle}>About This Event</h2>
-              <p style={styles.description}>{event.description}</p>
-            </div>
-          )}
-
-          {/* Club Card */}
-          {event.club && (
-            <div style={styles.clubSection}>
-              <h2 style={styles.sectionTitle}>Hosted By</h2>
-              <div style={styles.clubCard}>
-                {event.club.profileImageUrl ? (
-                  <img
-                    src={event.club.profileImageUrl}
-                    alt={event.club.name}
-                    style={styles.clubImage}
-                  />
-                ) : (
-                  <div style={styles.clubImagePlaceholder}>
-                    <span style={styles.clubImagePlaceholderText}>
-                      {event.club.name.charAt(0).toUpperCase()}
+        ) : (
+          <div style={styles.heroBannerNoImage}>
+            <div style={styles.heroContentNoImage}>
+              <div style={styles.heroBadges}>
+                {event.eventType && (
+                  <div style={styles.heroCategoryTag}>
+                    <span style={styles.heroCategoryIcon}>🎯</span>
+                    <span style={styles.heroCategoryLabel}>
+                      {event.eventType}
                     </span>
                   </div>
                 )}
-                <div style={styles.clubInfo}>
-                  <h3 style={styles.clubName}>{event.club.name}</h3>
-                  {event.club.description && (
-                    <p style={styles.clubDescription}>
-                      {event.club.description}
-                    </p>
-                  )}
+                {event.isFree ? (
+                  <div style={styles.heroFreeTag}>
+                    <span style={styles.heroFreeText}>FREE EVENT</span>
+                  </div>
+                ) : event.price != null ? (
+                  <div style={styles.heroPriceTag}>
+                    <span style={styles.heroPriceText}>
+                      €{event.price.toFixed(2)}
+                    </span>
+                  </div>
+                ) : null}
+              </div>
+              <h1 style={styles.heroTitleNoImage}>{event.title}</h1>
+            </div>
+          </div>
+        )}
+
+        {/* Main Content Area */}
+        <div style={styles.mainContent}>
+          <div style={styles.contentGrid}>
+            {/* Left Column - Event Details */}
+            <div style={styles.leftColumn}>
+              {/* Key Information Cards */}
+              <div style={styles.infoCardsSection}>
+                {eventDate && (
+                  <div style={styles.infoCard} className="fade-in">
+                    <div style={styles.infoCardIconWrapper}>
+                      <div style={styles.infoCardIcon}>📅</div>
+                    </div>
+                    <div style={styles.infoCardContent}>
+                      <div style={styles.infoCardLabel}>Event Date</div>
+                      <div style={styles.infoCardValue}>{eventDate}</div>
+                      {eventTime && (
+                        <div style={styles.infoCardSubtext}>
+                          Starts at {eventTime}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {fullLocation && (
+                  <div style={styles.infoCard} className="fade-in">
+                    <div style={styles.infoCardIconWrapper}>
+                      <div style={styles.infoCardIcon}>📍</div>
+                    </div>
+                    <div style={styles.infoCardContent}>
+                      <div style={styles.infoCardLabel}>Location</div>
+                      <div style={styles.infoCardValue}>{fullLocation}</div>
+                    </div>
+                  </div>
+                )}
+
+                {totalAttendees > 0 && (
+                  <div style={styles.infoCard} className="fade-in">
+                    <div style={styles.infoCardIconWrapper}>
+                      <div style={styles.infoCardIcon}>👥</div>
+                    </div>
+                    <div style={styles.infoCardContent}>
+                      <div style={styles.infoCardLabel}>Attendees</div>
+                      <div style={styles.infoCardValue}>
+                        <strong>{event.usersComing || 0}</strong> confirmed
+                        {event.usersMaybeComing ? (
+                          <span style={styles.attendeeMaybe}>
+                            {" "}
+                            • <strong>{event.usersMaybeComing}</strong> maybe
+                          </span>
+                        ) : null}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Event Description */}
+              {event.description && (
+                <div style={styles.descriptionBox} className="fade-in">
+                  <h2 style={styles.sectionHeading}>
+                    <span style={styles.sectionHeadingIcon}>📝</span>
+                    About This Event
+                  </h2>
+                  <div style={styles.descriptionText}>{event.description}</div>
                 </div>
+              )}
+            </div>
+
+            {/* Right Column - Club & CTA */}
+            <div style={styles.rightColumn}>
+              {/* Club Information Card */}
+              {event.club && (
+                <div style={styles.clubBox} className="fade-in">
+                  <h2 style={styles.sectionHeading}>
+                    <span style={styles.sectionHeadingIcon}>🏢</span>
+                    Hosted By
+                  </h2>
+                  <div style={styles.clubCard}>
+                    {event.club.profileImageUrl ? (
+                      <img
+                        src={event.club.profileImageUrl}
+                        alt={event.club.name}
+                        style={styles.clubAvatar}
+                      />
+                    ) : (
+                      <div style={styles.clubAvatarPlaceholder}>
+                        <span style={styles.clubAvatarInitial}>
+                          {event.club.name.charAt(0).toUpperCase()}
+                        </span>
+                      </div>
+                    )}
+                    <div style={styles.clubDetails}>
+                      <h3 style={styles.clubTitle}>{event.club.name}</h3>
+                      {event.club.description && (
+                        <p style={styles.clubBio}>{event.club.description}</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Call to Action */}
+              <div style={styles.ctaBox} className="fade-in">
+                <a
+                  href={`rydora://event/${event.id}`}
+                  style={styles.ctaButton}
+                  onClick={() => {
+                    setTimeout(() => {
+                      window.location.href = `https://apps.apple.com/app/rydora`;
+                    }, 500);
+                  }}
+                >
+                  <span style={styles.ctaButtonIcon}>📱</span>
+                  <span style={styles.ctaButtonLabel}>Open in Rydora App</span>
+                  <span style={styles.ctaButtonArrow}>→</span>
+                </a>
+                <p style={styles.ctaHint}>
+                  Download the app to RSVP and join the community
+                </p>
               </div>
             </div>
-          )}
-
-          {/* CTA Button */}
-          <div style={styles.ctaSection}>
-            <a
-              href={`rydora://event/${event.id}`}
-              style={styles.ctaButton}
-              onClick={() => {
-                setTimeout(() => {
-                  window.location.href = `https://apps.apple.com/app/rydora`;
-                }, 500);
-              }}
-            >
-              <span style={styles.ctaButtonIcon}>📱</span>
-              <span style={styles.ctaButtonText}>Open in Rydora App</span>
-            </a>
-            <p style={styles.ctaSubtext}>
-              Join the community and RSVP to this event
-            </p>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 
 const styles: { [key: string]: React.CSSProperties } = {
-  container: {
+  pageContainer: {
     minHeight: "100vh",
-    backgroundColor: "#0F172A",
-    color: "#F1F5F9",
+    backgroundColor: "#0A0E1A",
+    color: "#FFFFFF",
     fontFamily:
-      "system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Helvetica, Arial, sans-serif",
+      "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
   },
-  heroSection: {
+  heroBanner: {
     position: "relative",
     width: "100%",
-    height: "400px",
+    height: "500px",
     overflow: "hidden",
   },
   heroImage: {
@@ -272,285 +338,343 @@ const styles: { [key: string]: React.CSSProperties } = {
     height: "100%",
     objectFit: "cover",
   },
-  heroOverlay: {
+  heroGradient: {
     position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
-    height: "200px",
-    background: "linear-gradient(to top, rgba(15, 23, 42, 0.95), transparent)",
+    height: "60%",
+    background:
+      "linear-gradient(to top, rgba(10, 14, 26, 0.98) 0%, rgba(10, 14, 26, 0.7) 50%, transparent 100%)",
   },
-  contentWrapper: {
-    maxWidth: "900px",
+  heroContent: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    padding: "60px 32px 40px",
+    zIndex: 2,
+  },
+  heroBannerNoImage: {
+    backgroundColor: "#1A1F2E",
+    padding: "60px 32px 40px",
+    borderBottom: "2px solid rgba(255, 255, 255, 0.1)",
+  },
+  heroContentNoImage: {
+    maxWidth: "1200px",
     margin: "0 auto",
-    padding: "32px 24px",
   },
-  mainCard: {
-    backgroundColor: "#1E293B",
-    borderRadius: "24px",
-    padding: "32px",
-    boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.3)",
-    border: "1px solid rgba(255, 255, 255, 0.1)",
-  },
-  headerSection: {
-    marginBottom: "32px",
-  },
-  titleRow: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "16px",
-  },
-  title: {
-    margin: 0,
-    fontSize: "36px",
-    fontWeight: "800",
-    color: "#FFFFFF",
-    lineHeight: "1.2",
-    letterSpacing: "-0.5px",
-  },
-  badgesRow: {
+  heroBadges: {
     display: "flex",
     flexWrap: "wrap",
-    gap: "12px",
-    alignItems: "center",
+    gap: "10px",
+    marginBottom: "20px",
   },
-  categoryBadge: {
+  heroCategoryTag: {
     display: "inline-flex",
     alignItems: "center",
     gap: "6px",
-    padding: "8px 16px",
-    borderRadius: "12px",
-    backgroundColor: "#254D70",
-    border: "1px solid rgba(255, 255, 255, 0.1)",
+    padding: "8px 14px",
+    borderRadius: "20px",
+    backgroundColor: "rgba(37, 77, 112, 0.9)",
+    backdropFilter: "blur(10px)",
+    border: "1px solid rgba(255, 255, 255, 0.15)",
   },
-  categoryIcon: {
+  heroCategoryIcon: {
     fontSize: "14px",
   },
-  categoryText: {
-    fontSize: "14px",
+  heroCategoryLabel: {
+    fontSize: "13px",
     fontWeight: "600",
     color: "#FFFFFF",
     textTransform: "capitalize",
   },
-  priceBadge: {
+  heroFreeTag: {
     display: "inline-flex",
     alignItems: "center",
-    padding: "8px 16px",
-    borderRadius: "12px",
-    backgroundColor: "#254D70",
-    border: "1px solid rgba(255, 255, 255, 0.1)",
+    padding: "8px 14px",
+    borderRadius: "20px",
+    backgroundColor: "rgba(22, 163, 74, 0.9)",
+    backdropFilter: "blur(10px)",
+    border: "1px solid rgba(255, 255, 255, 0.15)",
   },
-  priceText: {
-    fontSize: "14px",
+  heroFreeText: {
+    fontSize: "13px",
+    fontWeight: "700",
+    color: "#FFFFFF",
+    letterSpacing: "0.5px",
+  },
+  heroPriceTag: {
+    display: "inline-flex",
+    alignItems: "center",
+    padding: "8px 14px",
+    borderRadius: "20px",
+    backgroundColor: "rgba(37, 77, 112, 0.9)",
+    backdropFilter: "blur(10px)",
+    border: "1px solid rgba(255, 255, 255, 0.15)",
+  },
+  heroPriceText: {
+    fontSize: "13px",
     fontWeight: "700",
     color: "#FFFFFF",
   },
-  priceBadgeFree: {
-    display: "inline-flex",
-    alignItems: "center",
-    padding: "8px 16px",
-    borderRadius: "12px",
-    backgroundColor: "#16A34A",
-    border: "1px solid rgba(255, 255, 255, 0.1)",
-  },
-  priceTextFree: {
-    fontSize: "14px",
-    fontWeight: "700",
+  heroTitle: {
+    margin: 0,
+    fontSize: "48px",
+    fontWeight: "900",
     color: "#FFFFFF",
+    lineHeight: "1.1",
+    letterSpacing: "-1px",
+    textShadow: "0 2px 20px rgba(0, 0, 0, 0.5)",
   },
-  detailsGrid: {
+  heroTitleNoImage: {
+    margin: 0,
+    fontSize: "48px",
+    fontWeight: "900",
+    color: "#FFFFFF",
+    lineHeight: "1.1",
+    letterSpacing: "-1px",
+  },
+  mainContent: {
+    maxWidth: "1200px",
+    margin: "0 auto",
+    padding: "48px 24px",
+  },
+  contentGrid: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
-    gap: "16px",
-    marginBottom: "32px",
+    gridTemplateColumns: "1fr 400px",
+    gap: "32px",
+    alignItems: "start",
   },
-  detailCard: {
+  leftColumn: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "24px",
+  },
+  rightColumn: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "24px",
+    position: "sticky",
+    top: "24px",
+  },
+  infoCardsSection: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "16px",
+  },
+  infoCard: {
     display: "flex",
     alignItems: "flex-start",
-    gap: "12px",
-    padding: "20px",
-    backgroundColor: "#0F172A",
-    borderRadius: "16px",
+    gap: "16px",
+    padding: "24px",
+    backgroundColor: "#1A1F2E",
+    borderRadius: "20px",
     border: "1px solid rgba(255, 255, 255, 0.1)",
+    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.2)",
+    transition: "all 0.3s ease",
   },
-  detailIcon: {
-    fontSize: "24px",
+  infoCardIconWrapper: {
     flexShrink: 0,
+    width: "56px",
+    height: "56px",
+    borderRadius: "14px",
+    backgroundColor: "rgba(37, 77, 112, 0.3)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
   },
-  detailContent: {
+  infoCardIcon: {
+    fontSize: "28px",
+  },
+  infoCardContent: {
     flex: 1,
   },
-  detailLabel: {
-    fontSize: "12px",
-    fontWeight: "600",
+  infoCardLabel: {
+    fontSize: "11px",
+    fontWeight: "700",
     color: "#94A3B8",
     textTransform: "uppercase",
-    letterSpacing: "0.5px",
-    marginBottom: "4px",
+    letterSpacing: "1px",
+    marginBottom: "8px",
   },
-  detailValue: {
-    fontSize: "16px",
-    fontWeight: "600",
+  infoCardValue: {
+    fontSize: "18px",
+    fontWeight: "700",
     color: "#FFFFFF",
     lineHeight: "1.4",
   },
-  detailSubtext: {
+  infoCardSubtext: {
     fontSize: "14px",
     color: "#94A3B8",
     marginTop: "4px",
   },
-  descriptionSection: {
-    marginBottom: "32px",
-    paddingBottom: "32px",
-    borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
+  attendeeMaybe: {
+    color: "#94A3B8",
+    fontWeight: "400",
   },
-  sectionTitle: {
-    margin: "0 0 16px",
-    fontSize: "20px",
-    fontWeight: "700",
+  descriptionBox: {
+    padding: "32px",
+    backgroundColor: "#1A1F2E",
+    borderRadius: "20px",
+    border: "1px solid rgba(255, 255, 255, 0.1)",
+    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.2)",
+  },
+  sectionHeading: {
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+    margin: "0 0 20px",
+    fontSize: "22px",
+    fontWeight: "800",
     color: "#FFFFFF",
   },
-  description: {
+  sectionHeadingIcon: {
+    fontSize: "24px",
+  },
+  descriptionText: {
     margin: 0,
     fontSize: "16px",
-    lineHeight: "1.7",
+    lineHeight: "1.8",
     color: "#CBD5E1",
+    whiteSpace: "pre-wrap",
   },
-  clubSection: {
-    marginBottom: "32px",
+  clubBox: {
+    padding: "32px",
+    backgroundColor: "#1A1F2E",
+    borderRadius: "20px",
+    border: "1px solid rgba(255, 255, 255, 0.1)",
+    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.2)",
   },
   clubCard: {
     display: "flex",
     alignItems: "flex-start",
     gap: "16px",
-    padding: "20px",
-    backgroundColor: "#0F172A",
-    borderRadius: "16px",
-    border: "1px solid rgba(255, 255, 255, 0.1)",
-    transition: "all 0.2s",
   },
-  clubImage: {
-    width: "64px",
-    height: "64px",
-    borderRadius: "12px",
+  clubAvatar: {
+    width: "72px",
+    height: "72px",
+    borderRadius: "16px",
     objectFit: "cover",
-    border: "2px solid rgba(255, 255, 255, 0.1)",
+    border: "3px solid rgba(255, 255, 255, 0.15)",
     flexShrink: 0,
   },
-  clubImagePlaceholder: {
-    width: "64px",
-    height: "64px",
-    borderRadius: "12px",
+  clubAvatarPlaceholder: {
+    width: "72px",
+    height: "72px",
+    borderRadius: "16px",
     backgroundColor: "#254D70",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     flexShrink: 0,
+    border: "3px solid rgba(255, 255, 255, 0.15)",
   },
-  clubImagePlaceholderText: {
-    fontSize: "24px",
-    fontWeight: "700",
+  clubAvatarInitial: {
+    fontSize: "28px",
+    fontWeight: "800",
     color: "#FFFFFF",
   },
-  clubInfo: {
+  clubDetails: {
     flex: 1,
   },
-  clubName: {
+  clubTitle: {
     margin: "0 0 8px",
-    fontSize: "18px",
-    fontWeight: "700",
+    fontSize: "20px",
+    fontWeight: "800",
     color: "#FFFFFF",
   },
-  clubDescription: {
+  clubBio: {
     margin: 0,
     fontSize: "14px",
     lineHeight: "1.6",
     color: "#94A3B8",
   },
-  ctaSection: {
+  ctaBox: {
+    padding: "32px",
+    backgroundColor: "linear-gradient(135deg, #254D70 0%, #1A3A52 100%)",
+    background: "linear-gradient(135deg, #254D70 0%, #1A3A52 100%)",
+    borderRadius: "20px",
+    border: "1px solid rgba(255, 255, 255, 0.15)",
+    boxShadow: "0 8px 24px rgba(37, 77, 112, 0.4)",
     textAlign: "center",
-    paddingTop: "32px",
-    borderTop: "1px solid rgba(255, 255, 255, 0.1)",
   },
   ctaButton: {
-    display: "inline-flex",
+    display: "flex",
     alignItems: "center",
-    gap: "10px",
-    padding: "16px 32px",
+    justifyContent: "center",
+    gap: "12px",
+    width: "100%",
+    padding: "18px 24px",
     borderRadius: "16px",
     backgroundColor: "#567AFD",
     color: "#FFFFFF",
     textDecoration: "none",
-    fontWeight: "600",
+    fontWeight: "700",
     fontSize: "16px",
-    transition: "all 0.2s",
-    boxShadow: "0 4px 12px rgba(86, 122, 253, 0.3)",
+    transition: "all 0.3s ease",
+    boxShadow: "0 4px 16px rgba(86, 122, 253, 0.4)",
+    marginBottom: "12px",
   },
   ctaButtonIcon: {
-    fontSize: "20px",
+    fontSize: "22px",
   },
-  ctaButtonText: {
+  ctaButtonLabel: {
     fontSize: "16px",
   },
-  ctaSubtext: {
-    margin: "12px 0 0",
-    fontSize: "14px",
-    color: "#94A3B8",
+  ctaButtonArrow: {
+    fontSize: "20px",
+    marginLeft: "auto",
   },
-  loadingContainer: {
+  ctaHint: {
+    margin: 0,
+    fontSize: "13px",
+    color: "rgba(255, 255, 255, 0.7)",
+  },
+  loadingWrapper: {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
     minHeight: "100vh",
-    gap: "16px",
+    gap: "20px",
   },
-  spinner: {
-    width: "48px",
-    height: "48px",
-    border: "4px solid rgba(255, 255, 255, 0.1)",
+  loadingSpinner: {
+    width: "56px",
+    height: "56px",
+    border: "5px solid rgba(255, 255, 255, 0.1)",
     borderTopColor: "#567AFD",
     borderRadius: "50%",
     animation: "spin 1s linear infinite",
   },
-  loadingText: {
+  loadingMessage: {
     fontSize: "16px",
     color: "#94A3B8",
     margin: 0,
   },
-  errorCard: {
-    maxWidth: "500px",
-    margin: "100px auto",
+  errorWrapper: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    minHeight: "100vh",
     padding: "40px",
-    backgroundColor: "#1E293B",
-    borderRadius: "24px",
     textAlign: "center",
-    border: "1px solid rgba(255, 255, 255, 0.1)",
   },
-  errorIcon: {
-    fontSize: "48px",
-    marginBottom: "16px",
+  errorEmoji: {
+    fontSize: "64px",
+    marginBottom: "20px",
   },
-  errorTitle: {
+  errorHeading: {
     margin: "0 0 12px",
-    fontSize: "24px",
-    fontWeight: "700",
+    fontSize: "32px",
+    fontWeight: "800",
     color: "#FFFFFF",
   },
-  errorText: {
+  errorMessage: {
     margin: 0,
     fontSize: "16px",
     color: "#94A3B8",
+    maxWidth: "500px",
   },
 };
-
-// Add spinner animation
-if (typeof document !== "undefined") {
-  const style = document.createElement("style");
-  style.textContent = `
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-  `;
-  document.head.appendChild(style);
-}
