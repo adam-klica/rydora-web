@@ -70,7 +70,7 @@ export default function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
 
           <div className="space-y-4">
             <a
-              href="https://apps.apple.com/app/rydora"
+              href="https://apps.apple.com/us/app/rydora/id6748365405"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center justify-between gap-5 rounded-2xl border border-slate-700 bg-slate-800/80 transition-all duration-300 hover:bg-slate-800 hover:border-slate-600 hover:scale-[1.02] hover:shadow-lg"
@@ -108,7 +108,7 @@ export default function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
 
             {/* Google Play */}
             <a
-              href="https://play.google.com/store/apps/details?id=com.rydora"
+              href="https://play.google.com/store/apps/details?id=com.rydora.app"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center justify-between gap-5 rounded-2xl border border-slate-700 bg-slate-800/80 transition-all duration-300 hover:bg-slate-800 hover:border-slate-600 hover:scale-[1.02] hover:shadow-lg"

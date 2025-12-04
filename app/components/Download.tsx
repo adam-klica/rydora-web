@@ -65,14 +65,16 @@ export default function Download() {
         style={{
           position: "absolute",
           inset: 0,
-          background: "radial-gradient(circle at 50% 50%, rgba(16,185,129,0.1), transparent 50%)",
+          background:
+            "radial-gradient(circle at 50% 50%, rgba(16,185,129,0.1), transparent 50%)",
         }}
       />
       <div
         style={{
           position: "absolute",
           inset: 0,
-          background: "radial-gradient(circle at 80% 20%, rgba(6,182,212,0.1), transparent 50%)",
+          background:
+            "radial-gradient(circle at 80% 20%, rgba(6,182,212,0.1), transparent 50%)",
         }}
       />
 
@@ -154,7 +156,8 @@ export default function Download() {
               lineHeight: "1.6",
             }}
           >
-            Download Rydora today and join thousands of car enthusiasts worldwide.
+            Download Rydora today and join thousands of car enthusiasts
+            worldwide.
           </p>
 
           <motion.div
@@ -171,7 +174,7 @@ export default function Download() {
             }}
           >
             <motion.a
-              href="https://apps.apple.com/app/rydora"
+              href="https://apps.apple.com/us/app/rydora/id6748365405"
               target="_blank"
               rel="noopener noreferrer"
               style={{
@@ -194,11 +197,13 @@ export default function Download() {
               whileTap={{ scale: 0.98 }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.backgroundColor = "#f1f5f9";
-                e.currentTarget.style.boxShadow = "0 25px 50px -12px rgba(16, 185, 129, 0.2)";
+                e.currentTarget.style.boxShadow =
+                  "0 25px 50px -12px rgba(16, 185, 129, 0.2)";
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.backgroundColor = "#fff";
-                e.currentTarget.style.boxShadow = "0 25px 50px -12px rgba(0, 0, 0, 0.25)";
+                e.currentTarget.style.boxShadow =
+                  "0 25px 50px -12px rgba(0, 0, 0, 0.25)";
               }}
             >
               <SiAppstore style={{ width: "32px", height: "32px" }} />
@@ -207,7 +212,7 @@ export default function Download() {
             </motion.a>
 
             <motion.a
-              href="https://play.google.com/store/apps/details?id=com.rydora"
+              href="https://play.google.com/store/apps/details?id=com.rydora.app"
               target="_blank"
               rel="noopener noreferrer"
               style={{
@@ -230,11 +235,13 @@ export default function Download() {
               whileTap={{ scale: 0.98 }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.backgroundColor = "#f1f5f9";
-                e.currentTarget.style.boxShadow = "0 25px 50px -12px rgba(16, 185, 129, 0.2)";
+                e.currentTarget.style.boxShadow =
+                  "0 25px 50px -12px rgba(16, 185, 129, 0.2)";
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.backgroundColor = "#fff";
-                e.currentTarget.style.boxShadow = "0 25px 50px -12px rgba(0, 0, 0, 0.25)";
+                e.currentTarget.style.boxShadow =
+                  "0 25px 50px -12px rgba(0, 0, 0, 0.25)";
               }}
             >
               <SiGoogleplay style={{ width: "32px", height: "32px" }} />
