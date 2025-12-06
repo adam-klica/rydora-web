@@ -146,7 +146,8 @@ export default function Hero() {
                 Throttle Your{" "}
                 <span
                   style={{
-                    background: "linear-gradient(to right, #6ee7b7, #67e8f9, #93c5fd)",
+                    background:
+                      "linear-gradient(to right, #6ee7b7, #67e8f9, #93c5fd)",
                     WebkitBackgroundClip: "text",
                     WebkitTextFillColor: "transparent",
                     backgroundClip: "text",
@@ -172,7 +173,9 @@ export default function Hero() {
                   margin: 0,
                 }}
               >
-                The ultimate social platform for car enthusiasts. Showcase your garage, join clubs, create events, buy & sell parts, and connect with car lovers worldwide.
+                The ultimate social platform for car enthusiasts. Showcase your
+                garage, join clubs, create events, buy & sell parts, and connect
+                with car lovers worldwide.
               </p>
             </motion.div>
 
@@ -190,7 +193,7 @@ export default function Hero() {
               }}
             >
               <motion.a
-                href="https://apps.apple.com/app/rydora"
+                href="https://apps.apple.com/us/app/rydora/id6748365405"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group inline-flex items-center gap-3 rounded-xl bg-white font-semibold text-slate-900 shadow-xl transition-all duration-300 hover:bg-slate-100 hover:shadow-2xl hover:scale-105"
@@ -224,7 +227,7 @@ export default function Hero() {
               </motion.a>
 
               <motion.a
-                href="https://play.google.com/store/apps/details?id=com.rydora"
+                href="https://play.google.com/store/apps/details?id=com.rydora.app"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group inline-flex items-center gap-3 rounded-xl bg-white font-semibold text-slate-900 shadow-xl transition-all duration-300 hover:bg-slate-100 hover:shadow-2xl hover:scale-105"
@@ -283,7 +286,7 @@ export default function Hero() {
                 <div className="absolute inset-0 rounded-[3rem] bg-gradient-to-b from-slate-800 to-slate-900 p-2 shadow-2xl border-4 border-slate-700">
                   {/* Notch */}
                   <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-slate-900 rounded-b-2xl z-10" />
-                  
+
                   {/* Screen */}
                   <div className="relative w-full h-full rounded-[2.5rem] overflow-hidden bg-slate-900">
                     <Image
