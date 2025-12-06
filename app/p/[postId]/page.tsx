@@ -29,10 +29,10 @@ const detectDeviceAndRedirect = () => {
   const isAndroid = /android/i.test(userAgent);
 
   if (isIOS) {
-    window.location.href = "https://apps.apple.com/app/rydora/id6738549227";
+    window.location.href = "https://apps.apple.com/us/app/rydora/id6748365405";
   } else if (isAndroid) {
     window.location.href =
-      "https://play.google.com/store/apps/details?id=com.rydora";
+      "https://play.google.com/store/apps/details?id=com.rydora.app";
   }
 };
 
