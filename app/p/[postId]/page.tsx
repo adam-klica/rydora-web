@@ -167,17 +167,30 @@ export default function PostPage() {
             </div>
           </div>
 
-          {/* Post Image */}
+          {/* Post Media (Image or Video) */}
           {post.mediaUrl && (
             <div style={styles.imageContainer}>
-              <Image
-                src={post.mediaUrl}
-                alt={post.caption || "Post image"}
-                width={1200}
-                height={800}
-                style={styles.postImage}
-                priority
-              />
+              {post.mediaUrl.match(
+                /\.(mp4|webm|mov|m4v|avi|mkv|3gp|flv|wmv|mpeg|mpg)$/i
+              ) ? (
+                <video
+                  src={post.mediaUrl}
+                  controls
+                  style={styles.postVideo}
+                  preload="metadata"
+                >
+                  Your browser does not support the video tag.
+                </video>
+              ) : (
+                <Image
+                  src={post.mediaUrl}
+                  alt={post.caption || "Post image"}
+                  width={1200}
+                  height={800}
+                  style={styles.postImage}
+                  priority
+                />
+              )}
             </div>
           )}
 
@@ -307,6 +320,13 @@ const styles: { [key: string]: React.CSSProperties } = {
     display: "block",
     objectFit: "contain",
     maxHeight: "600px",
+  },
+  postVideo: {
+    width: "100%",
+    height: "auto",
+    display: "block",
+    maxHeight: "600px",
+    backgroundColor: "#000",
   },
   captionContainer: {
     marginBottom: "32px",
