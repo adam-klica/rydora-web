@@ -3,6 +3,9 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
+import { MdTune, MdVolumeUp, MdFlashOn, MdMemory } from "react-icons/md";
+import { GiSteeringWheel, GiCarWheel } from "react-icons/gi";
+import { FaCog } from "react-icons/fa";
 import Header from "../../../../components/Header";
 import Footer from "../../../../components/Footer";
 import DownloadModal from "../../../../components/DownloadModal";
@@ -25,11 +28,14 @@ interface CarData {
   year: number;
   engine: string | null;
   description: string;
-  likes: number;
-  commentsCount: number;
   modifications: Modification[];
   media: CarMedia[];
   createdAt: string;
+}
+
+interface GarageRating {
+  rating: number | null;
+  ratingCount: number;
 }
 
 // Detect device and redirect to app store
@@ -54,12 +60,36 @@ export default function CarDetailsPage() {
   const garageId = params?.garageId as string;
   const carId = params?.carId as string;
   const [car, setCar] = useState<CarData | null>(null);
+  const [garageRating, setGarageRating] = useState<GarageRating | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [isImageViewerOpen, setIsImageViewerOpen] = useState(false);
+
+  // Icon mapping to match app - using MaterialCommunityIcons names
+  const getModificationIcon = (iconName: string, type: string) => {
+    // Map MaterialCommunityIcons names to available react-icons
+    const iconMap: { [key: string]: React.ReactNode } = {
+      engine: <span style={{ fontSize: "24px" }}>🔧</span>,
+      chip: <MdMemory size={24} color="#254D70" />,
+      steering: <GiSteeringWheel size={24} color="#254D70" />,
+      tune: <MdTune size={24} color="#254D70" />,
+      "car-brake-abs": <span style={{ fontSize: "24px" }}>🛑</span>,
+      smog: <span style={{ fontSize: "24px" }}>💨</span>,
+      seat: <GiCarWheel size={24} color="#254D70" />,
+      "car-sports": <GiCarWheel size={24} color="#254D70" />,
+      "volume-high": <MdVolumeUp size={24} color="#254D70" />,
+      flash: <MdFlashOn size={24} color="#254D70" />,
+      cog: <FaCog size={24} color="#254D70" />,
+    };
+
+    // Try icon name first, then type
+    return (
+      iconMap[iconName] || iconMap[type] || <FaCog size={24} color="#254D70" />
+    );
+  };
 
   useEffect(() => {
     const onScroll = () => setIsScrolled(window.scrollY > 12);
@@ -73,21 +103,34 @@ export default function CarDetailsPage() {
     const fetchCar = async () => {
       try {
         setLoading(true);
-        const res = await fetch(
-          `https://rydora.me/api/user-garages/car/${carId}`
-        );
-        if (!res.ok) {
+        const [carRes, garageRes] = await Promise.all([
+          fetch(`https://rydora.me/api/user-garages/car/${carId}`),
+          fetch(
+            `https://rydora.me/api/user-garages/${garageId}/cars?isPublic=true`
+          ),
+        ]);
+
+        if (!carRes.ok) {
           throw new Error("Car not found");
         }
-        const data = await res.json();
-        setCar(data.car);
+        const carData = await carRes.json();
+        setCar(carData.car);
+
+        // Fetch garage rating
+        if (garageRes.ok) {
+          const garageData = await garageRes.json();
+          setGarageRating({
+            rating: garageData.rating ?? null,
+            ratingCount: garageData.ratingCount ?? 0,
+          });
+        }
 
         // Update page metadata for SEO
-        const title = `${data.car.make} ${data.car.model} (${data.car.year}) - Rydora`;
+        const title = `${carData.car.make} ${carData.car.model} (${carData.car.year}) - Rydora`;
         const description =
-          data.car.description ||
-          `View ${data.car.make} ${data.car.model} on Rydora.`;
-        const image = data.car.media?.[0]?.url || "";
+          carData.car.description ||
+          `View ${carData.car.make} ${carData.car.model} on Rydora.`;
+        const image = carData.car.media?.[0]?.url || "";
 
         document.title = title;
 
@@ -296,19 +339,21 @@ export default function CarDetailsPage() {
             </div>
           )}
 
-          {/* Stats */}
-          <div style={styles.statsContainer}>
-            <div style={styles.statItem}>
-              <span style={styles.statIcon}>❤️</span>
-              <span style={styles.statValue}>{car.likes || 0}</span>
-              <span style={styles.statLabel}>Likes</span>
+          {/* Garage Rating */}
+          {garageRating && (
+            <div style={styles.statsContainer}>
+              <div style={styles.statItem}>
+                <span style={styles.statIcon}>⭐</span>
+                <span style={styles.statValue}>
+                  {garageRating.rating ? garageRating.rating.toFixed(1) : "N/A"}
+                </span>
+                <span style={styles.statLabel}>
+                  Rating ({garageRating.ratingCount}{" "}
+                  {garageRating.ratingCount === 1 ? "review" : "reviews"})
+                </span>
+              </div>
             </div>
-            <div style={styles.statItem}>
-              <span style={styles.statIcon}>💬</span>
-              <span style={styles.statValue}>{car.commentsCount || 0}</span>
-              <span style={styles.statLabel}>Comments</span>
-            </div>
-          </div>
+          )}
 
           {/* Description */}
           {car.description && (
@@ -325,9 +370,9 @@ export default function CarDetailsPage() {
               <div style={styles.modificationsGrid}>
                 {car.modifications.map((mod, index) => (
                   <div key={index} style={styles.modificationCard}>
-                    <span style={styles.modificationIcon}>
-                      {mod.icon || "⚙️"}
-                    </span>
+                    <div style={styles.modificationIcon}>
+                      {getModificationIcon(mod.icon || "", mod.type)}
+                    </div>
                     <div style={styles.modificationContent}>
                       <span style={styles.modificationType}>
                         {mod.type.charAt(0).toUpperCase() + mod.type.slice(1)}
@@ -659,8 +704,12 @@ const styles: { [key: string]: React.CSSProperties } = {
     border: "1px solid #e2e8f0",
   },
   modificationIcon: {
-    fontSize: "24px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
     flexShrink: 0,
+    width: "32px",
+    height: "32px",
   },
   modificationContent: {
     display: "flex",
