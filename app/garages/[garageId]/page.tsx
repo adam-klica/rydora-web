@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
@@ -46,12 +46,17 @@ const detectDeviceAndRedirect = () => {
 
 export default function GaragePage() {
   const params = useParams();
+  const router = useRouter();
   const garageId = params?.garageId as string;
   const [garage, setGarage] = useState<GarageData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
+
+  const handleCarClick = (carId: string) => {
+    router.push(`/garages/${garageId}/cars/${carId}`);
+  };
 
   useEffect(() => {
     const onScroll = () => setIsScrolled(window.scrollY > 12);
@@ -228,7 +233,20 @@ export default function GaragePage() {
           {garage.cars.length > 0 ? (
             <div style={styles.carsGrid}>
               {garage.cars.map((car) => (
-                <div key={car.id} style={styles.carCard}>
+                <div
+                  key={car.id}
+                  style={styles.carCard}
+                  onClick={() => handleCarClick(car.id)}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = "translateY(-4px)";
+                    e.currentTarget.style.boxShadow =
+                      "0 12px 24px rgba(0, 0, 0, 0.15)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = "translateY(0)";
+                    e.currentTarget.style.boxShadow = "none";
+                  }}
+                >
                   {car.images && car.images.length > 0 ? (
                     <Image
                       src={car.images[0]}
@@ -259,7 +277,21 @@ export default function GaragePage() {
 
           {/* CTA Button */}
           <div style={styles.ctaSection}>
-            <button onClick={detectDeviceAndRedirect} style={styles.ctaButton}>
+            <button
+              onClick={detectDeviceAndRedirect}
+              style={styles.ctaButton}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "#5568d3";
+                e.currentTarget.style.transform = "translateY(-2px)";
+                e.currentTarget.style.boxShadow =
+                  "0 8px 16px rgba(102, 126, 234, 0.4)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "#667eea";
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "none";
+              }}
+            >
               Open in Rydora App
             </button>
             <p style={styles.ctaSubtext}>
@@ -402,8 +434,9 @@ const styles: { [key: string]: React.CSSProperties } = {
     backgroundColor: "#f8fafc",
     borderRadius: "16px",
     overflow: "hidden",
-    transition: "transform 0.2s, box-shadow 0.2s",
+    transition: "transform 0.3s ease, box-shadow 0.3s ease",
     cursor: "pointer",
+    border: "1px solid #e2e8f0",
   },
   carImage: {
     width: "100%",
