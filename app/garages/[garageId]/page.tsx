@@ -72,13 +72,62 @@ export default function GaragePage() {
           throw new Error("Garage not found");
         }
         const data = await res.json();
-        setGarage({
+        const garageData = {
           id: garageId,
           name: data.name || "Garage",
           user: data.user || { username: "Unknown", profileImage: null },
           cars: data.cars || [],
           createdAt: data.createdAt || new Date().toISOString(),
-        });
+        };
+        setGarage(garageData);
+
+        // Update page metadata for SEO
+        const title = `${garageData.name} - Rydora Garage`;
+        const description = `Check out ${
+          garageData.user.username
+        }'s garage with ${garageData.cars.length} ${
+          garageData.cars.length === 1 ? "car" : "cars"
+        } on Rydora.`;
+        const image = garageData.cars[0]?.images?.[0] || "";
+
+        document.title = title;
+
+        // Update or create meta tags
+        const updateMetaTag = (
+          name: string,
+          content: string,
+          isProperty = false
+        ) => {
+          const selector = isProperty
+            ? `meta[property="${name}"]`
+            : `meta[name="${name}"]`;
+          let meta = document.querySelector(selector) as HTMLMetaElement;
+          if (!meta) {
+            meta = document.createElement("meta");
+            if (isProperty) {
+              meta.setAttribute("property", name);
+            } else {
+              meta.setAttribute("name", name);
+            }
+            document.head.appendChild(meta);
+          }
+          meta.setAttribute("content", content);
+        };
+
+        updateMetaTag("description", description);
+        updateMetaTag("og:title", title, true);
+        updateMetaTag("og:description", description, true);
+        updateMetaTag("og:type", "website", true);
+        updateMetaTag("og:url", `https://rydora.me/garages/${garageId}`, true);
+        if (image) {
+          updateMetaTag("og:image", image, true);
+        }
+        updateMetaTag("twitter:card", "summary_large_image");
+        updateMetaTag("twitter:title", title);
+        updateMetaTag("twitter:description", description);
+        if (image) {
+          updateMetaTag("twitter:image", image);
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to load garage");
       } finally {
