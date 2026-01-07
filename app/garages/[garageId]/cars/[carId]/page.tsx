@@ -242,37 +242,113 @@ export default function CarDetailsPage() {
 
   return (
     <div style={styles.pageContainer}>
+      <style jsx>{`
+        @media (max-width: 768px) {
+          .hero-card {
+            padding: 24px !important;
+          }
+          .car-title {
+            font-size: 32px !important;
+          }
+          .car-year {
+            font-size: 20px !important;
+          }
+          .car-engine {
+            font-size: 16px !important;
+          }
+          .car-header-modern {
+            flex-direction: column;
+            align-items: stretch !important;
+          }
+          .rating-card {
+            width: 100%;
+          }
+          .content-card {
+            padding: 24px !important;
+          }
+          .section-title {
+            font-size: 24px !important;
+          }
+          .modifications-grid {
+            grid-template-columns: 1fr !important;
+          }
+          .cta-card {
+            padding: 40px 24px !important;
+          }
+          .cta-title {
+            font-size: 28px !important;
+          }
+        }
+        @media (max-width: 480px) {
+          .car-title {
+            font-size: 28px !important;
+          }
+          .main-image {
+            max-height: 400px !important;
+          }
+          .thumbnail {
+            width: 100px !important;
+            height: 75px !important;
+          }
+        }
+      `}</style>
       <Header
         isScrolled={isScrolled}
         onDownloadClick={() => setIsDownloadModalOpen(true)}
       />
       <div style={styles.contentWrapper}>
-        <div style={styles.carCard}>
+        <div style={styles.container}>
           {/* Back Button */}
           <button
             onClick={() => router.push(`/garages/${garageId}`)}
             style={styles.backButtonTop}
             onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = "#f1f5f9";
-              e.currentTarget.style.borderColor = "#cbd5e1";
-              e.currentTarget.style.color = "#475569";
+              e.currentTarget.style.backgroundColor = "#667eea";
+              e.currentTarget.style.color = "#fff";
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.backgroundColor = "transparent";
-              e.currentTarget.style.borderColor = "#e2e8f0";
-              e.currentTarget.style.color = "#64748b";
+              e.currentTarget.style.color = "#667eea";
             }}
           >
             ← Back to Garage
           </button>
 
-          {/* Car Header */}
-          <div style={styles.carHeader}>
-            <h1 style={styles.carTitle}>
-              {car.make} {car.model}
-            </h1>
-            <p style={styles.carYear}>{car.year}</p>
-            {car.engine && <p style={styles.carEngine}>🔧 {car.engine}</p>}
+          {/* Hero Section with Car Info */}
+          <div style={styles.heroCard} className="hero-card">
+            <div style={styles.carHeaderModern} className="car-header-modern">
+              <div style={styles.carTitleSection}>
+                <h1 style={styles.carTitle} className="car-title">
+                  {car.make} {car.model}
+                </h1>
+                <div style={styles.carMetaRow}>
+                  <span style={styles.carYear} className="car-year">{car.year}</span>
+                  {car.engine && (
+                    <>
+                      <span style={styles.metaDivider}>•</span>
+                      <span style={styles.carEngine} className="car-engine">{car.engine}</span>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              {/* Rating Section - Only show if data exists */}
+              {garageRating && garageRating.ratingCount > 0 && (
+                <div style={styles.ratingCard} className="rating-card">
+                  <div style={styles.ratingContent}>
+                    <div style={styles.starContainer}>
+                      <span style={styles.starIcon}>⭐</span>
+                      <span style={styles.ratingValue}>
+                        {garageRating.rating ? garageRating.rating.toFixed(1) : "N/A"}
+                      </span>
+                    </div>
+                    <span style={styles.ratingCount}>
+                      {garageRating.ratingCount} {garageRating.ratingCount === 1 ? "review" : "reviews"}
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Main Image Gallery */}
@@ -285,6 +361,7 @@ export default function CarDetailsPage() {
                   width={1200}
                   height={800}
                   style={styles.mainImage}
+                  className="main-image"
                   onClick={() => setIsImageViewerOpen(true)}
                 />
                 {carImages.length > 1 && (
@@ -298,6 +375,7 @@ export default function CarDetailsPage() {
                   {carImages.map((img, index) => (
                     <div
                       key={index}
+                      className="thumbnail"
                       style={{
                         ...styles.thumbnail,
                         ...(selectedImageIndex === index
@@ -323,7 +401,7 @@ export default function CarDetailsPage() {
           {/* Videos */}
           {carVideos.length > 0 && (
             <div style={styles.videoSection}>
-              <h2 style={styles.sectionTitle}>Videos</h2>
+              <h2 style={styles.sectionTitle} className="section-title">Videos</h2>
               <div style={styles.videoGrid}>
                 {carVideos.map((video, index) => (
                   <video
@@ -339,38 +417,22 @@ export default function CarDetailsPage() {
             </div>
           )}
 
-          {/* Garage Rating */}
-          {garageRating && (
-            <div style={styles.statsContainer}>
-              <div style={styles.statItem}>
-                <span style={styles.statIcon}>⭐</span>
-                <span style={styles.statValue}>
-                  {garageRating.rating ? garageRating.rating.toFixed(1) : "N/A"}
-                </span>
-                <span style={styles.statLabel}>
-                  Rating ({garageRating.ratingCount}{" "}
-                  {garageRating.ratingCount === 1 ? "review" : "reviews"})
-                </span>
-              </div>
-            </div>
-          )}
-
           {/* Description */}
           {car.description && (
-            <div style={styles.descriptionSection}>
-              <h2 style={styles.sectionTitle}>Description</h2>
+            <div style={styles.contentCard} className="content-card">
+              <h2 style={styles.sectionTitle} className="section-title">About This Car</h2>
               <p style={styles.description}>{car.description}</p>
             </div>
           )}
 
           {/* Modifications */}
           {car.modifications && car.modifications.length > 0 && (
-            <div style={styles.modificationsSection}>
-              <h2 style={styles.sectionTitle}>Modifications</h2>
-              <div style={styles.modificationsGrid}>
+            <div style={styles.contentCard} className="content-card">
+              <h2 style={styles.sectionTitle} className="section-title">Modifications & Upgrades</h2>
+              <div style={styles.modificationsGrid} className="modifications-grid">
                 {car.modifications.map((mod, index) => (
                   <div key={index} style={styles.modificationCard}>
-                    <div style={styles.modificationIcon}>
+                    <div style={styles.modificationIconWrapper}>
                       {getModificationIcon(mod.icon || "", mod.type)}
                     </div>
                     <div style={styles.modificationContent}>
@@ -385,28 +447,32 @@ export default function CarDetailsPage() {
             </div>
           )}
 
-          {/* CTA Button */}
+          {/* CTA Section */}
           <div style={styles.ctaSection}>
-            <button
-              onClick={detectDeviceAndRedirect}
-              style={styles.ctaButton}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = "#5568d3";
-                e.currentTarget.style.transform = "translateY(-2px)";
-                e.currentTarget.style.boxShadow =
-                  "0 8px 16px rgba(102, 126, 234, 0.4)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = "#667eea";
-                e.currentTarget.style.transform = "translateY(0)";
-                e.currentTarget.style.boxShadow = "none";
-              }}
-            >
-              Open in Rydora App
-            </button>
-            <p style={styles.ctaSubtext}>
-              View full car details, comments, and connect with the owner
-            </p>
+            <div style={styles.ctaCard} className="cta-card">
+              <h2 style={styles.ctaTitle} className="cta-title">Interested in this car?</h2>
+              <p style={styles.ctaDescription}>
+                Download the Rydora app to see full details, leave comments, and connect with the owner
+              </p>
+              <button
+                onClick={detectDeviceAndRedirect}
+                style={styles.ctaButton}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = "#5568d3";
+                  e.currentTarget.style.transform = "translateY(-2px)";
+                  e.currentTarget.style.boxShadow =
+                    "0 12px 24px rgba(102, 126, 234, 0.5)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = "#667eea";
+                  e.currentTarget.style.transform = "translateY(0)";
+                  e.currentTarget.style.boxShadow =
+                    "0 8px 16px rgba(102, 126, 234, 0.3)";
+                }}
+              >
+                Open in Rydora App
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -479,13 +545,17 @@ const styles: { [key: string]: React.CSSProperties } = {
   },
   contentWrapper: {
     flex: 1,
-    display: "flex",
-    justifyContent: "center",
-    padding: "20px 16px",
-    paddingTop: "120px",
+    padding: "0",
+    paddingTop: "80px",
+  },
+  container: {
+    maxWidth: "1400px",
+    margin: "0 auto",
+    padding: "20px",
   },
   loadingWrapper: {
     textAlign: "center",
+    padding: "100px 20px",
   },
   loadingSpinner: {
     width: "50px",
@@ -503,6 +573,7 @@ const styles: { [key: string]: React.CSSProperties } = {
   errorWrapper: {
     textAlign: "center",
     maxWidth: "500px",
+    padding: "100px 20px",
   },
   errorIcon: {
     fontSize: "80px",
@@ -532,47 +603,91 @@ const styles: { [key: string]: React.CSSProperties } = {
     transition: "all 0.2s",
   },
   backButtonTop: {
-    padding: "10px 20px",
-    fontSize: "14px",
+    padding: "12px 24px",
+    fontSize: "16px",
     fontWeight: "600",
-    color: "#64748b",
+    color: "#667eea",
     backgroundColor: "transparent",
-    border: "1px solid #e2e8f0",
-    borderRadius: "8px",
+    border: "2px solid #667eea",
+    borderRadius: "12px",
     cursor: "pointer",
-    transition: "all 0.2s",
-    marginBottom: "24px",
+    transition: "all 0.3s",
+    marginBottom: "32px",
   },
-  carCard: {
-    maxWidth: "1200px",
-    width: "100%",
+  heroCard: {
     backgroundColor: "#fff",
-    borderRadius: "20px",
-    boxShadow: "0 10px 40px rgba(0, 0, 0, 0.1)",
+    borderRadius: "24px",
     padding: "40px",
-  },
-  carHeader: {
-    textAlign: "center",
     marginBottom: "40px",
-    paddingBottom: "24px",
-    borderBottom: "2px solid #e2e8f0",
+    boxShadow: "0 10px 40px rgba(0, 0, 0, 0.08)",
+  },
+  carHeaderModern: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    flexWrap: "wrap",
+    gap: "24px",
+  },
+  carTitleSection: {
+    flex: 1,
+    minWidth: "280px",
   },
   carTitle: {
-    fontSize: "36px",
-    fontWeight: "800",
+    fontSize: "42px",
+    fontWeight: "900",
     color: "#1e293b",
-    marginBottom: "8px",
+    marginBottom: "12px",
     lineHeight: "1.2",
+  },
+  carMetaRow: {
+    display: "flex",
+    alignItems: "center",
+    gap: "12px",
+    flexWrap: "wrap",
   },
   carYear: {
     fontSize: "24px",
-    color: "#64748b",
-    fontWeight: "600",
-    marginBottom: "8px",
+    color: "#667eea",
+    fontWeight: "700",
+  },
+  metaDivider: {
+    fontSize: "20px",
+    color: "#cbd5e1",
   },
   carEngine: {
-    fontSize: "18px",
-    color: "#475569",
+    fontSize: "20px",
+    color: "#64748b",
+    fontWeight: "600",
+  },
+  ratingCard: {
+    backgroundColor: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+    borderRadius: "16px",
+    padding: "20px 28px",
+    boxShadow: "0 8px 24px rgba(102, 126, 234, 0.3)",
+  },
+  ratingContent: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    gap: "8px",
+  },
+  starContainer: {
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+  },
+  starIcon: {
+    fontSize: "32px",
+  },
+  ratingValue: {
+    fontSize: "36px",
+    fontWeight: "900",
+    color: "#fff",
+  },
+  ratingCount: {
+    fontSize: "14px",
+    color: "rgba(255, 255, 255, 0.9)",
     fontWeight: "500",
   },
   imageGallery: {
@@ -581,50 +696,53 @@ const styles: { [key: string]: React.CSSProperties } = {
   mainImageContainer: {
     position: "relative",
     width: "100%",
-    borderRadius: "16px",
+    borderRadius: "24px",
     overflow: "hidden",
-    marginBottom: "16px",
+    marginBottom: "20px",
     cursor: "pointer",
-    backgroundColor: "#f1f5f9",
+    backgroundColor: "#000",
+    boxShadow: "0 10px 40px rgba(0, 0, 0, 0.15)",
   },
   mainImage: {
     width: "100%",
     height: "auto",
     objectFit: "contain",
-    maxHeight: "600px",
+    maxHeight: "700px",
   },
   imageCounter: {
     position: "absolute",
-    top: "16px",
-    right: "16px",
-    backgroundColor: "rgba(0, 0, 0, 0.7)",
+    top: "20px",
+    right: "20px",
+    backgroundColor: "rgba(0, 0, 0, 0.8)",
+    backdropFilter: "blur(10px)",
     color: "#fff",
-    padding: "8px 16px",
-    borderRadius: "20px",
-    fontSize: "14px",
-    fontWeight: "600",
+    padding: "10px 20px",
+    borderRadius: "24px",
+    fontSize: "15px",
+    fontWeight: "700",
   },
   thumbnailContainer: {
     display: "flex",
-    gap: "12px",
+    gap: "16px",
     overflowX: "auto",
-    paddingBottom: "8px",
+    paddingBottom: "12px",
   },
   thumbnail: {
     flexShrink: 0,
-    width: "120px",
-    height: "90px",
-    borderRadius: "12px",
+    width: "140px",
+    height: "100px",
+    borderRadius: "16px",
     overflow: "hidden",
     cursor: "pointer",
-    border: "2px solid transparent",
-    transition: "all 0.2s",
-    opacity: 0.7,
+    border: "3px solid transparent",
+    transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+    opacity: 0.6,
   },
   thumbnailActive: {
     borderColor: "#667eea",
     opacity: 1,
     transform: "scale(1.05)",
+    boxShadow: "0 4px 12px rgba(102, 126, 234, 0.4)",
   },
   thumbnailImage: {
     width: "100%",
@@ -636,121 +754,114 @@ const styles: { [key: string]: React.CSSProperties } = {
   },
   videoGrid: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-    gap: "20px",
+    gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+    gap: "24px",
   },
   video: {
     width: "100%",
-    borderRadius: "12px",
+    borderRadius: "20px",
     backgroundColor: "#000",
+    boxShadow: "0 8px 24px rgba(0, 0, 0, 0.12)",
   },
-  statsContainer: {
-    display: "flex",
-    gap: "32px",
-    justifyContent: "center",
+  contentCard: {
+    backgroundColor: "#fff",
+    borderRadius: "24px",
+    padding: "40px",
     marginBottom: "40px",
-    padding: "24px",
-    backgroundColor: "#f8fafc",
-    borderRadius: "16px",
-  },
-  statItem: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    gap: "8px",
-  },
-  statIcon: {
-    fontSize: "24px",
-  },
-  statValue: {
-    fontSize: "28px",
-    fontWeight: "700",
-    color: "#1e293b",
-  },
-  statLabel: {
-    fontSize: "14px",
-    color: "#64748b",
-    fontWeight: "500",
-  },
-  descriptionSection: {
-    marginBottom: "40px",
+    boxShadow: "0 10px 40px rgba(0, 0, 0, 0.08)",
   },
   sectionTitle: {
-    fontSize: "24px",
-    fontWeight: "700",
+    fontSize: "28px",
+    fontWeight: "800",
     color: "#1e293b",
-    marginBottom: "16px",
+    marginBottom: "24px",
   },
   description: {
-    fontSize: "16px",
+    fontSize: "18px",
     color: "#475569",
     lineHeight: "1.8",
     whiteSpace: "pre-wrap",
   },
-  modificationsSection: {
-    marginBottom: "40px",
-  },
   modificationsGrid: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
-    gap: "16px",
+    gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+    gap: "20px",
   },
   modificationCard: {
     display: "flex",
-    gap: "12px",
-    padding: "16px",
+    gap: "16px",
+    padding: "20px",
     backgroundColor: "#f8fafc",
-    borderRadius: "12px",
-    border: "1px solid #e2e8f0",
+    borderRadius: "16px",
+    border: "2px solid #e2e8f0",
+    transition: "all 0.2s",
   },
-  modificationIcon: {
+  modificationIconWrapper: {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     flexShrink: 0,
-    width: "32px",
-    height: "32px",
+    width: "48px",
+    height: "48px",
+    backgroundColor: "#fff",
+    borderRadius: "12px",
+    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.08)",
   },
   modificationContent: {
     display: "flex",
     flexDirection: "column",
-    gap: "4px",
+    gap: "6px",
     flex: 1,
   },
   modificationType: {
-    fontSize: "12px",
-    fontWeight: "600",
+    fontSize: "13px",
+    fontWeight: "700",
     color: "#667eea",
     textTransform: "uppercase",
-    letterSpacing: "0.5px",
+    letterSpacing: "0.8px",
   },
   modificationText: {
-    fontSize: "14px",
+    fontSize: "16px",
     color: "#475569",
     lineHeight: "1.5",
+    fontWeight: "500",
   },
   ctaSection: {
+    marginBottom: "60px",
+  },
+  ctaCard: {
+    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+    borderRadius: "24px",
+    padding: "60px 40px",
     textAlign: "center",
-    paddingTop: "32px",
-    borderTop: "2px solid #e2e8f0",
+    boxShadow: "0 20px 60px rgba(102, 126, 234, 0.3)",
+  },
+  ctaTitle: {
+    fontSize: "36px",
+    fontWeight: "900",
+    color: "#fff",
+    marginBottom: "16px",
+    textShadow: "0 2px 20px rgba(0, 0, 0, 0.2)",
+  },
+  ctaDescription: {
+    fontSize: "18px",
+    color: "rgba(255, 255, 255, 0.9)",
+    marginBottom: "32px",
+    lineHeight: "1.6",
+    maxWidth: "600px",
+    margin: "0 auto 32px",
   },
   ctaButton: {
-    padding: "16px 40px",
-    fontSize: "16px",
+    padding: "18px 48px",
+    fontSize: "18px",
     fontWeight: "700",
-    color: "#fff",
-    backgroundColor: "#667eea",
+    color: "#667eea",
+    backgroundColor: "#fff",
     border: "none",
-    borderRadius: "12px",
+    borderRadius: "14px",
     cursor: "pointer",
-    transition: "all 0.2s",
-    marginBottom: "12px",
-    width: "100%",
-    maxWidth: "400px",
-  },
-  ctaSubtext: {
-    fontSize: "14px",
-    color: "#94a3b8",
+    transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+    boxShadow: "0 8px 16px rgba(102, 126, 234, 0.3)",
   },
   imageViewerOverlay: {
     position: "fixed",
