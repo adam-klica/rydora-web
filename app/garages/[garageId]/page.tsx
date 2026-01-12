@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import Image from "next/image";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import DownloadModal from "../../components/DownloadModal";
@@ -243,7 +242,7 @@ export default function GaragePage() {
             <div style={styles.heroContent}>
               <div style={styles.userInfoLarge} className="user-info-large">
                 {garage.user.profileImage ? (
-                  <Image
+                  <img
                     src={garage.user.profileImage}
                     alt={garage.user.username}
                     width={80}
@@ -302,11 +301,9 @@ export default function GaragePage() {
                   >
                     <div style={styles.carImageWrapper}>
                       {car.images && car.images.length > 0 ? (
-                        <Image
+                        <img
                           src={car.images[0]}
                           alt={`${car.make} ${car.model}`}
-                          width={400}
-                          height={300}
                           style={styles.carImage}
                         />
                       ) : (

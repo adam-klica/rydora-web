@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import Image from "next/image";
 import { MdTune, MdVolumeUp, MdFlashOn, MdMemory } from "react-icons/md";
 import { GiSteeringWheel, GiCarWheel } from "react-icons/gi";
 import { FaCog } from "react-icons/fa";
@@ -355,11 +354,9 @@ export default function CarDetailsPage() {
           {carImages.length > 0 && (
             <div style={styles.imageGallery}>
               <div style={styles.mainImageContainer}>
-                <Image
+                <img
                   src={carImages[selectedImageIndex]?.url || carImages[0]?.url}
                   alt={`${car.make} ${car.model}`}
-                  width={1200}
-                  height={800}
                   style={styles.mainImage}
                   className="main-image"
                   onClick={() => setIsImageViewerOpen(true)}
@@ -384,11 +381,9 @@ export default function CarDetailsPage() {
                       }}
                       onClick={() => setSelectedImageIndex(index)}
                     >
-                      <Image
+                      <img
                         src={img.url}
                         alt={`${car.make} ${car.model} - Image ${index + 1}`}
-                        width={120}
-                        height={90}
                         style={styles.thumbnailImage}
                       />
                     </div>
@@ -490,11 +485,9 @@ export default function CarDetailsPage() {
             >
               ✕
             </button>
-            <Image
+            <img
               src={carImages[selectedImageIndex]?.url || carImages[0]?.url}
               alt={`${car.make} ${car.model}`}
-              width={1920}
-              height={1080}
               style={styles.imageViewerImage}
             />
             {carImages.length > 1 && (
