@@ -37,6 +37,17 @@ interface GarageRating {
   ratingCount: number;
 }
 
+// Fix malformed URLs that have double https:// (e.g., supabase prefix + full URL)
+const sanitizeImageUrl = (url: string | null | undefined): string => {
+  if (!url) return "";
+  // Check if URL contains a second https:// after the first one
+  const secondHttpsIndex = url.indexOf("https://", 8);
+  if (secondHttpsIndex > 0) {
+    return url.substring(secondHttpsIndex);
+  }
+  return url;
+};
+
 // Detect device and redirect to app store
 const detectDeviceAndRedirect = () => {
   if (typeof window === "undefined") return;
@@ -129,7 +140,7 @@ export default function CarDetailsPage() {
         const description =
           carData.car.description ||
           `View ${carData.car.make} ${carData.car.model} on Rydora.`;
-        const image = carData.car.media?.[0]?.url || "";
+        const image = sanitizeImageUrl(carData.car.media?.[0]?.url);
 
         document.title = title;
 
@@ -355,7 +366,7 @@ export default function CarDetailsPage() {
             <div style={styles.imageGallery}>
               <div style={styles.mainImageContainer}>
                 <img
-                  src={carImages[selectedImageIndex]?.url || carImages[0]?.url}
+                  src={sanitizeImageUrl(carImages[selectedImageIndex]?.url || carImages[0]?.url)}
                   alt={`${car.make} ${car.model}`}
                   style={styles.mainImage}
                   className="main-image"
@@ -382,7 +393,7 @@ export default function CarDetailsPage() {
                       onClick={() => setSelectedImageIndex(index)}
                     >
                       <img
-                        src={img.url}
+                        src={sanitizeImageUrl(img.url)}
                         alt={`${car.make} ${car.model} - Image ${index + 1}`}
                         style={styles.thumbnailImage}
                       />
@@ -401,7 +412,7 @@ export default function CarDetailsPage() {
                 {carVideos.map((video, index) => (
                   <video
                     key={index}
-                    src={video.url}
+                    src={sanitizeImageUrl(video.url)}
                     controls
                     style={styles.video}
                   >
@@ -486,7 +497,7 @@ export default function CarDetailsPage() {
               ✕
             </button>
             <img
-              src={carImages[selectedImageIndex]?.url || carImages[0]?.url}
+              src={sanitizeImageUrl(carImages[selectedImageIndex]?.url || carImages[0]?.url)}
               alt={`${car.make} ${car.model}`}
               style={styles.imageViewerImage}
             />

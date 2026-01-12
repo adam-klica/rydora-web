@@ -27,6 +27,17 @@ interface GarageData {
   createdAt: string;
 }
 
+// Fix malformed URLs that have double https:// (e.g., supabase prefix + full URL)
+const sanitizeImageUrl = (url: string | null | undefined): string => {
+  if (!url) return "";
+  // Check if URL contains a second https:// after the first one
+  const secondHttpsIndex = url.indexOf("https://", 8);
+  if (secondHttpsIndex > 0) {
+    return url.substring(secondHttpsIndex);
+  }
+  return url;
+};
+
 // Detect device and redirect to app store
 const detectDeviceAndRedirect = () => {
   if (typeof window === "undefined") return;
@@ -92,7 +103,7 @@ export default function GaragePage() {
         }'s garage with ${garageData.cars.length} ${
           garageData.cars.length === 1 ? "car" : "cars"
         } on Rydora.`;
-        const image = garageData.cars[0]?.images?.[0] || "";
+        const image = sanitizeImageUrl(garageData.cars[0]?.images?.[0]);
 
         document.title = title;
 
@@ -243,7 +254,7 @@ export default function GaragePage() {
               <div style={styles.userInfoLarge} className="user-info-large">
                 {garage.user.profileImage ? (
                   <img
-                    src={garage.user.profileImage}
+                    src={sanitizeImageUrl(garage.user.profileImage)}
                     alt={garage.user.username}
                     width={80}
                     height={80}
@@ -302,7 +313,7 @@ export default function GaragePage() {
                     <div style={styles.carImageWrapper}>
                       {car.images && car.images.length > 0 ? (
                         <img
-                          src={car.images[0]}
+                          src={sanitizeImageUrl(car.images[0])}
                           alt={`${car.make} ${car.model}`}
                           style={styles.carImage}
                         />
