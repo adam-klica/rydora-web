@@ -15,6 +15,7 @@ export default function Header({ isScrolled, onDownloadClick }: HeaderProps) {
 
   const navLinks = [
     { href: "https://rydora.me", label: "Home" },
+    { href: "/garages", label: "Garages" },
     { href: "#features", label: "Features" },
     { href: "#gallery", label: "Gallery" },
     { href: "#about", label: "About" },
