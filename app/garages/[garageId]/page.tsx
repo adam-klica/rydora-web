@@ -39,19 +39,26 @@ const sanitizeImageUrl = (url: string | null | undefined): string => {
 };
 
 // Detect device and redirect to app store
-const detectDeviceAndRedirect = () => {
+const detectDeviceAndRedirect = (garageId: string) => {
   if (typeof window === "undefined") return;
 
   const userAgent = navigator.userAgent || navigator.vendor;
   const isIOS = /iPad|iPhone|iPod/.test(userAgent);
   const isAndroid = /android/i.test(userAgent);
 
-  if (isIOS) {
-    window.location.href = "https://apps.apple.com/us/app/rydora/id6748365405";
-  } else if (isAndroid) {
-    window.location.href =
-      "https://play.google.com/store/apps/details?id=com.rydora.app";
-  }
+  // Try deep link first
+  const deepLink = `rydora://garages/${garageId}`;
+  window.location.href = deepLink;
+
+  // Fallback to store after delay
+  setTimeout(() => {
+    if (isIOS) {
+      window.location.href = "https://apps.apple.com/us/app/rydora/id6748365405";
+    } else if (isAndroid) {
+      window.location.href =
+        "https://play.google.com/store/apps/details?id=com.rydora.app";
+    }
+  }, 2500);
 };
 
 export default function GaragePage() {
@@ -81,7 +88,7 @@ export default function GaragePage() {
       try {
         setLoading(true);
         const res = await fetch(
-          `https://rydora.me/api/user-garages/${garageId}/cars?isPublic=true`
+          `https://dev.rydora.me/api/user-garages/${garageId}/cars?isPublic=true`
         );
         if (!res.ok) {
           throw new Error("Garage not found");
@@ -156,6 +163,12 @@ export default function GaragePage() {
   if (loading) {
     return (
       <div style={styles.pageContainer}>
+        <style jsx>{`
+          @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+          }
+        `}</style>
         <Header
           isScrolled={isScrolled}
           onDownloadClick={() => setIsDownloadModalOpen(true)}
@@ -190,10 +203,18 @@ export default function GaragePage() {
               {error || "This garage doesn't exist or has been removed."}
             </p>
             <button
-              onClick={() => (window.location.href = "/")}
-              style={styles.homeButton}
+              onClick={() => router.push("/garages")}
+              style={styles.backButton}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "rgba(37, 77, 112, 1)";
+                e.currentTarget.style.transform = "translateY(-2px)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "rgba(37, 77, 112, 0.9)";
+                e.currentTarget.style.transform = "translateY(0)";
+              }}
             >
-              Go to Homepage
+              Browse Garages
             </button>
           </div>
         </div>
@@ -209,16 +230,30 @@ export default function GaragePage() {
   return (
     <div style={styles.pageContainer}>
       <style jsx>{`
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @media (max-width: 1024px) {
+          .cars-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+          }
+        }
         @media (max-width: 768px) {
           .hero-section {
-            padding: 40px 24px !important;
+            padding: 32px 20px !important;
           }
           .garage-name {
-            font-size: 32px !important;
+            font-size: 28px !important;
           }
-          .user-info-large {
+          .user-info {
             flex-direction: column;
             text-align: center;
+            gap: 16px !important;
           }
           .cars-grid {
             grid-template-columns: 1fr !important;
@@ -227,17 +262,14 @@ export default function GaragePage() {
             padding: 40px 24px !important;
           }
           .cta-title {
-            font-size: 28px !important;
+            font-size: 24px !important;
           }
         }
         @media (max-width: 480px) {
           .garage-name {
-            font-size: 28px !important;
+            font-size: 24px !important;
           }
-          .stat-number {
-            font-size: 20px !important;
-          }
-          .section-title {
+          .stat-value {
             font-size: 24px !important;
           }
         }
@@ -248,66 +280,106 @@ export default function GaragePage() {
       />
       <div style={styles.contentWrapper}>
         <div style={styles.container}>
-          {/* Hero Section */}
-          <div style={styles.heroSection} className="hero-section">
-            <div style={styles.heroContent}>
-              <div style={styles.userInfoLarge} className="user-info-large">
-                {garage.user.profileImage ? (
-                  <img
-                    src={sanitizeImageUrl(garage.user.profileImage)}
-                    alt={garage.user.username}
-                    width={80}
-                    height={80}
-                    style={styles.userAvatarLarge}
-                  />
-                ) : (
-                  <div style={styles.userAvatarPlaceholderLarge}>
-                    {garage.user.username.charAt(0).toUpperCase()}
-                  </div>
-                )}
-                <div style={styles.userDetails}>
-                  <h1 style={styles.garageName} className="garage-name">{garage.name}</h1>
-                  <p style={styles.username}>@{garage.user.username}</p>
-                  <div style={styles.statsRow}>
-                    <div style={styles.statBadge}>
-                      <span style={styles.statNumber} className="stat-number">{garage.cars.length}</span>
-                      <span style={styles.statLabel}>
-                        {garage.cars.length === 1 ? "Car" : "Cars"}
-                      </span>
-                    </div>
-                  </div>
+          {/* Back Button */}
+          <button
+            onClick={() => router.push("/garages")}
+            style={styles.backLink}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = "#fff";
+              e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.1)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = "rgba(203, 213, 225, 0.8)";
+              e.currentTarget.style.backgroundColor = "transparent";
+            }}
+          >
+            ← Back to Garages
+          </button>
+
+          {/* Hero Card */}
+          <div style={styles.heroCard} className="hero-section">
+            <div style={styles.userInfo} className="user-info">
+              {garage.user.profileImage ? (
+                <img
+                  src={sanitizeImageUrl(garage.user.profileImage)}
+                  alt={garage.user.username}
+                  style={styles.userAvatar}
+                />
+              ) : (
+                <div style={styles.userAvatarPlaceholder}>
+                  {garage.user.username.charAt(0).toUpperCase()}
                 </div>
+              )}
+              <div style={styles.userDetails}>
+                <h1 style={styles.garageName} className="garage-name">{garage.name}</h1>
+                <p style={styles.username}>@{garage.user.username}</p>
               </div>
             </div>
+
+            {/* Stats Row */}
+            <div style={styles.statsRow}>
+              <div style={styles.statCard}>
+                <span style={styles.statValue} className="stat-value">{garage.cars.length}</span>
+                <span style={styles.statLabel}>{garage.cars.length === 1 ? "Car" : "Cars"}</span>
+              </div>
+              <div style={styles.statDivider} />
+              <div style={styles.statCard}>
+                <span style={styles.statValue} className="stat-value">
+                  {new Date(garage.createdAt).toLocaleDateString(undefined, { month: "short", year: "numeric" })}
+                </span>
+                <span style={styles.statLabel}>Created</span>
+              </div>
+            </div>
+
+            {/* Open in App Button */}
+            <button
+              onClick={() => detectDeviceAndRedirect(garageId)}
+              style={styles.openAppButton}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "rgba(37, 77, 112, 1)";
+                e.currentTarget.style.transform = "translateY(-2px)";
+                e.currentTarget.style.boxShadow = "0 12px 32px rgba(37, 77, 112, 0.5)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "rgba(37, 77, 112, 0.9)";
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "0 8px 24px rgba(37, 77, 112, 0.4)";
+              }}
+            >
+              Open in Rydora App
+            </button>
           </div>
 
-          {/* Cars Grid */}
+          {/* Cars Section */}
           {garage.cars.length > 0 ? (
             <div style={styles.carsSection}>
-              <h2 style={styles.sectionTitle} className="section-title">Collection</h2>
+              <h2 style={styles.sectionTitle}>Collection</h2>
               <div style={styles.carsGrid} className="cars-grid">
-                {garage.cars.map((car) => (
+                {garage.cars.map((car, index) => (
                   <div
                     key={car.id}
-                    style={styles.carCard}
+                    style={{
+                      ...styles.carCard,
+                      animation: `fadeIn 0.5s ease ${index * 0.1}s both`,
+                    }}
                     onClick={() => handleCarClick(car.id)}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.transform = "translateY(-8px)";
-                      e.currentTarget.style.boxShadow =
-                        "0 20px 40px rgba(0, 0, 0, 0.12)";
-                      const overlay = e.currentTarget.querySelector('[data-overlay]') as HTMLElement;
+                      e.currentTarget.style.transform = "translateY(-8px) scale(1.02)";
+                      e.currentTarget.style.boxShadow = "0 20px 40px rgba(0, 0, 0, 0.4)";
+                      e.currentTarget.style.borderColor = "rgba(37, 77, 112, 0.6)";
+                      const img = e.currentTarget.querySelector("img") as HTMLElement;
+                      if (img) img.style.transform = "scale(1.1)";
+                      const overlay = e.currentTarget.querySelector("[data-overlay]") as HTMLElement;
                       if (overlay) overlay.style.opacity = "1";
-                      const img = e.currentTarget.querySelector('img') as HTMLElement;
-                      if (img) img.style.transform = "scale(1.05)";
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.transform = "translateY(0)";
-                      e.currentTarget.style.boxShadow =
-                        "0 4px 12px rgba(0, 0, 0, 0.08)";
-                      const overlay = e.currentTarget.querySelector('[data-overlay]') as HTMLElement;
-                      if (overlay) overlay.style.opacity = "0";
-                      const img = e.currentTarget.querySelector('img') as HTMLElement;
+                      e.currentTarget.style.transform = "translateY(0) scale(1)";
+                      e.currentTarget.style.boxShadow = "0 8px 24px rgba(0, 0, 0, 0.2)";
+                      e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.06)";
+                      const img = e.currentTarget.querySelector("img") as HTMLElement;
                       if (img) img.style.transform = "scale(1)";
+                      const overlay = e.currentTarget.querySelector("[data-overlay]") as HTMLElement;
+                      if (overlay) overlay.style.opacity = "0";
                     }}
                   >
                     <div style={styles.carImageWrapper}>
@@ -322,15 +394,22 @@ export default function GaragePage() {
                           <span style={styles.carIcon}>🚗</span>
                         </div>
                       )}
+                      <div style={styles.imageOverlay} />
                       <div style={styles.carOverlay} data-overlay>
                         <span style={styles.viewDetails}>View Details →</span>
                       </div>
+                      {/* Year Badge */}
+                      <div style={styles.yearBadge}>{car.year}</div>
                     </div>
                     <div style={styles.carInfo}>
                       <h3 style={styles.carTitle}>
                         {car.make} {car.model}
                       </h3>
-                      <p style={styles.carYear}>{car.year}</p>
+                      <div style={styles.carMeta}>
+                        <span style={styles.carMetaItem}>
+                          {car.images?.length || 0} {car.images?.length === 1 ? "photo" : "photos"}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -339,34 +418,33 @@ export default function GaragePage() {
           ) : (
             <div style={styles.emptyCars}>
               <div style={styles.emptyIcon}>🚗</div>
-              <p style={styles.emptyMessage}>No cars in this garage yet</p>
+              <h3 style={styles.emptyTitle}>No Cars Yet</h3>
+              <p style={styles.emptyMessage}>This garage is empty. Check back later!</p>
             </div>
           )}
 
           {/* CTA Section */}
           <div style={styles.ctaSection}>
             <div style={styles.ctaCard} className="cta-card">
-              <h2 style={styles.ctaTitle} className="cta-title">Want to see more?</h2>
+              <h2 style={styles.ctaTitle} className="cta-title">Want to create your own garage?</h2>
               <p style={styles.ctaDescription}>
-                Download the Rydora app to view full garage details, connect with {garage.user.username}, and discover more amazing cars
+                Download the Rydora app to showcase your car collection, connect with {garage.user.username}, and discover amazing builds
               </p>
               <button
-                onClick={detectDeviceAndRedirect}
+                onClick={() => setIsDownloadModalOpen(true)}
                 style={styles.ctaButton}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = "#5568d3";
+                  e.currentTarget.style.background = "linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)";
                   e.currentTarget.style.transform = "translateY(-2px)";
-                  e.currentTarget.style.boxShadow =
-                    "0 12px 24px rgba(102, 126, 234, 0.5)";
+                  e.currentTarget.style.boxShadow = "0 12px 32px rgba(59, 130, 246, 0.5)";
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = "#667eea";
+                  e.currentTarget.style.background = "linear-gradient(135deg, #254D70 0%, #1E3A5F 100%)";
                   e.currentTarget.style.transform = "translateY(0)";
-                  e.currentTarget.style.boxShadow =
-                    "0 8px 16px rgba(102, 126, 234, 0.3)";
+                  e.currentTarget.style.boxShadow = "0 8px 24px rgba(37, 77, 112, 0.4)";
                 }}
               >
-                Open in Rydora App
+                Download Rydora App
               </button>
             </div>
           </div>
@@ -386,271 +464,347 @@ const styles: { [key: string]: React.CSSProperties } = {
     minHeight: "100vh",
     display: "flex",
     flexDirection: "column",
-    backgroundColor: "#f8fafc",
+    background: "linear-gradient(180deg, #070b12 0%, #0a1020 60%, #070b12 100%)",
+    color: "#e6ecf7",
   },
   contentWrapper: {
     flex: 1,
-    padding: "0",
-    paddingTop: "80px",
+    paddingTop: "100px",
+    paddingBottom: "60px",
   },
   container: {
-    maxWidth: "1400px",
+    maxWidth: "1200px",
     margin: "0 auto",
     padding: "0 20px",
   },
+  backLink: {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "8px",
+    padding: "10px 16px",
+    marginBottom: "24px",
+    fontSize: "14px",
+    fontWeight: "500",
+    color: "rgba(203, 213, 225, 0.8)",
+    backgroundColor: "transparent",
+    border: "none",
+    borderRadius: "8px",
+    cursor: "pointer",
+    transition: "all 0.2s ease",
+  },
   loadingWrapper: {
-    textAlign: "center",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
     padding: "100px 20px",
   },
   loadingSpinner: {
-    width: "50px",
-    height: "50px",
-    border: "4px solid #e2e8f0",
-    borderTop: "4px solid #667eea",
+    width: "48px",
+    height: "48px",
+    border: "4px solid rgba(37, 77, 112, 0.2)",
+    borderTop: "4px solid #254D70",
     borderRadius: "50%",
     animation: "spin 1s linear infinite",
-    margin: "0 auto 20px",
+    marginBottom: "20px",
   },
   loadingMessage: {
-    fontSize: "18px",
-    color: "#64748b",
+    fontSize: "16px",
+    color: "rgba(203, 213, 225, 0.7)",
   },
   errorWrapper: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
     textAlign: "center",
-    maxWidth: "500px",
     padding: "100px 20px",
   },
   errorIcon: {
     fontSize: "80px",
-    marginBottom: "20px",
+    marginBottom: "24px",
+    opacity: 0.5,
   },
   errorTitle: {
-    fontSize: "32px",
+    fontSize: "28px",
     fontWeight: "700",
-    color: "#1e293b",
+    color: "#fff",
     marginBottom: "12px",
   },
   errorMessage: {
-    fontSize: "18px",
-    color: "#64748b",
+    fontSize: "16px",
+    color: "rgba(203, 213, 225, 0.7)",
     marginBottom: "32px",
-    lineHeight: "1.6",
+    maxWidth: "400px",
   },
-  homeButton: {
+  backButton: {
     padding: "14px 32px",
     fontSize: "16px",
     fontWeight: "600",
     color: "#fff",
-    backgroundColor: "#667eea",
-    border: "none",
+    backgroundColor: "rgba(37, 77, 112, 0.9)",
+    border: "1px solid rgba(37, 77, 112, 0.5)",
     borderRadius: "12px",
     cursor: "pointer",
-    transition: "all 0.2s",
+    transition: "all 0.3s ease",
   },
-  heroSection: {
-    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+  heroCard: {
+    backgroundColor: "rgba(17, 24, 38, 0.8)",
+    border: "1px solid rgba(255, 255, 255, 0.06)",
     borderRadius: "24px",
-    padding: "60px 40px",
-    marginBottom: "60px",
-    boxShadow: "0 20px 60px rgba(102, 126, 234, 0.3)",
+    padding: "40px",
+    marginBottom: "40px",
+    boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3)",
   },
-  heroContent: {
-    maxWidth: "100%",
-  },
-  userInfoLarge: {
+  userInfo: {
     display: "flex",
     alignItems: "center",
-    gap: "32px",
-    flexWrap: "wrap",
+    gap: "24px",
+    marginBottom: "32px",
   },
-  userAvatarLarge: {
-    borderRadius: "50%",
-    objectFit: "cover",
-    border: "4px solid rgba(255, 255, 255, 0.3)",
-    boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2)",
-  },
-  userAvatarPlaceholderLarge: {
+  userAvatar: {
     width: "80px",
     height: "80px",
     borderRadius: "50%",
-    backgroundColor: "rgba(255, 255, 255, 0.2)",
-    color: "#fff",
+    objectFit: "cover",
+    border: "3px solid rgba(37, 77, 112, 0.5)",
+    boxShadow: "0 8px 24px rgba(0, 0, 0, 0.3)",
+  },
+  userAvatarPlaceholder: {
+    width: "80px",
+    height: "80px",
+    borderRadius: "50%",
+    backgroundColor: "rgba(37, 77, 112, 0.3)",
+    border: "3px solid rgba(37, 77, 112, 0.5)",
+    color: "#567AFD",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    fontSize: "36px",
+    fontSize: "32px",
     fontWeight: "700",
-    border: "4px solid rgba(255, 255, 255, 0.3)",
-    boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2)",
+    boxShadow: "0 8px 24px rgba(0, 0, 0, 0.3)",
   },
   userDetails: {
     flex: 1,
   },
   garageName: {
-    fontSize: "48px",
-    fontWeight: "900",
+    fontSize: "36px",
+    fontWeight: "800",
     color: "#fff",
     marginBottom: "8px",
     lineHeight: "1.2",
-    textShadow: "0 2px 20px rgba(0, 0, 0, 0.2)",
   },
   username: {
-    fontSize: "20px",
-    color: "rgba(255, 255, 255, 0.9)",
+    fontSize: "16px",
+    color: "rgba(148, 163, 184, 0.9)",
     fontWeight: "500",
-    marginBottom: "20px",
   },
   statsRow: {
     display: "flex",
-    gap: "20px",
-    flexWrap: "wrap",
-  },
-  statBadge: {
-    backgroundColor: "rgba(255, 255, 255, 0.2)",
-    backdropFilter: "blur(10px)",
-    padding: "12px 24px",
-    borderRadius: "12px",
-    display: "flex",
     alignItems: "center",
-    gap: "8px",
-    border: "1px solid rgba(255, 255, 255, 0.3)",
+    gap: "32px",
+    padding: "24px 0",
+    borderTop: "1px solid rgba(255, 255, 255, 0.06)",
+    borderBottom: "1px solid rgba(255, 255, 255, 0.06)",
+    marginBottom: "24px",
   },
-  statNumber: {
-    fontSize: "28px",
+  statCard: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    gap: "4px",
+  },
+  statValue: {
+    fontSize: "32px",
     fontWeight: "800",
     color: "#fff",
   },
   statLabel: {
+    fontSize: "13px",
+    color: "rgba(148, 163, 184, 0.8)",
+    textTransform: "uppercase",
+    letterSpacing: "0.5px",
+  },
+  statDivider: {
+    width: "1px",
+    height: "40px",
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
+  },
+  openAppButton: {
+    width: "100%",
+    padding: "16px 32px",
     fontSize: "16px",
-    color: "rgba(255, 255, 255, 0.9)",
-    fontWeight: "500",
+    fontWeight: "600",
+    color: "#fff",
+    backgroundColor: "rgba(37, 77, 112, 0.9)",
+    border: "1px solid rgba(37, 77, 112, 0.5)",
+    borderRadius: "12px",
+    cursor: "pointer",
+    transition: "all 0.3s ease",
+    boxShadow: "0 8px 24px rgba(37, 77, 112, 0.4)",
   },
   carsSection: {
-    marginBottom: "60px",
+    marginBottom: "48px",
   },
   sectionTitle: {
-    fontSize: "32px",
-    fontWeight: "800",
-    color: "#1e293b",
-    marginBottom: "32px",
+    fontSize: "24px",
+    fontWeight: "700",
+    color: "#fff",
+    marginBottom: "24px",
   },
   carsGrid: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))",
-    gap: "32px",
+    gridTemplateColumns: "repeat(3, 1fr)",
+    gap: "24px",
   },
   carCard: {
-    backgroundColor: "#fff",
+    backgroundColor: "rgba(17, 24, 38, 0.8)",
+    border: "1px solid rgba(255, 255, 255, 0.06)",
     borderRadius: "20px",
     overflow: "hidden",
-    transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
     cursor: "pointer",
-    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.08)",
+    transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+    boxShadow: "0 8px 24px rgba(0, 0, 0, 0.2)",
   },
   carImageWrapper: {
     position: "relative",
     width: "100%",
-    height: "240px",
+    height: "200px",
     overflow: "hidden",
   },
   carImage: {
     width: "100%",
     height: "100%",
     objectFit: "cover",
-    transition: "transform 0.3s ease",
+    transition: "transform 0.4s ease",
   },
   carImagePlaceholder: {
     width: "100%",
     height: "100%",
-    backgroundColor: "#e2e8f0",
+    backgroundColor: "#1E3A5F",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
   },
   carIcon: {
-    fontSize: "60px",
+    fontSize: "48px",
+    opacity: 0.5,
+  },
+  imageOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    background: "linear-gradient(to bottom, rgba(0,0,0,0) 50%, rgba(0,0,0,0.6) 100%)",
   },
   carOverlay: {
     position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
-    background: "linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 100%)",
     padding: "20px",
     opacity: 0,
     transition: "opacity 0.3s ease",
+    display: "flex",
+    justifyContent: "center",
   },
   viewDetails: {
     color: "#fff",
-    fontSize: "16px",
+    fontSize: "14px",
     fontWeight: "600",
+    padding: "8px 16px",
+    backgroundColor: "rgba(37, 77, 112, 0.9)",
+    borderRadius: "8px",
+  },
+  yearBadge: {
+    position: "absolute",
+    top: "12px",
+    right: "12px",
+    padding: "6px 12px",
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
+    backdropFilter: "blur(8px)",
+    borderRadius: "8px",
+    fontSize: "13px",
+    fontWeight: "600",
+    color: "#fff",
   },
   carInfo: {
     padding: "20px",
   },
   carTitle: {
-    fontSize: "20px",
+    fontSize: "18px",
     fontWeight: "700",
-    color: "#1e293b",
-    marginBottom: "6px",
+    color: "#fff",
+    marginBottom: "8px",
   },
-  carYear: {
-    fontSize: "16px",
-    color: "#64748b",
-    fontWeight: "500",
+  carMeta: {
+    display: "flex",
+    alignItems: "center",
+    gap: "12px",
+  },
+  carMetaItem: {
+    fontSize: "13px",
+    color: "rgba(148, 163, 184, 0.8)",
   },
   emptyCars: {
     textAlign: "center",
     padding: "80px 20px",
-    backgroundColor: "#fff",
-    borderRadius: "20px",
-    marginBottom: "60px",
+    backgroundColor: "rgba(17, 24, 38, 0.5)",
+    border: "1px solid rgba(255, 255, 255, 0.06)",
+    borderRadius: "24px",
+    marginBottom: "48px",
   },
   emptyIcon: {
-    fontSize: "80px",
-    marginBottom: "20px",
-    opacity: 0.5,
+    fontSize: "64px",
+    marginBottom: "16px",
+    opacity: 0.4,
+  },
+  emptyTitle: {
+    fontSize: "20px",
+    fontWeight: "700",
+    color: "#fff",
+    marginBottom: "8px",
   },
   emptyMessage: {
-    fontSize: "20px",
-    color: "#94a3b8",
-    fontWeight: "500",
+    fontSize: "15px",
+    color: "rgba(148, 163, 184, 0.7)",
   },
   ctaSection: {
-    marginBottom: "60px",
+    marginTop: "20px",
   },
   ctaCard: {
-    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+    backgroundColor: "rgba(17, 24, 38, 0.8)",
+    border: "1px solid rgba(255, 255, 255, 0.06)",
     borderRadius: "24px",
-    padding: "60px 40px",
+    padding: "48px 40px",
     textAlign: "center",
-    boxShadow: "0 20px 60px rgba(102, 126, 234, 0.3)",
+    boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3)",
   },
   ctaTitle: {
-    fontSize: "36px",
-    fontWeight: "900",
+    fontSize: "28px",
+    fontWeight: "800",
     color: "#fff",
-    marginBottom: "16px",
-    textShadow: "0 2px 20px rgba(0, 0, 0, 0.2)",
+    marginBottom: "12px",
   },
   ctaDescription: {
-    fontSize: "18px",
-    color: "rgba(255, 255, 255, 0.9)",
-    marginBottom: "32px",
+    fontSize: "16px",
+    color: "rgba(203, 213, 225, 0.8)",
+    marginBottom: "28px",
     lineHeight: "1.6",
-    maxWidth: "600px",
-    margin: "0 auto 32px",
+    maxWidth: "500px",
+    margin: "0 auto 28px",
   },
   ctaButton: {
-    padding: "18px 48px",
-    fontSize: "18px",
+    padding: "16px 40px",
+    fontSize: "16px",
     fontWeight: "700",
-    color: "#667eea",
-    backgroundColor: "#fff",
+    color: "#fff",
+    background: "linear-gradient(135deg, #254D70 0%, #1E3A5F 100%)",
     border: "none",
-    borderRadius: "14px",
+    borderRadius: "12px",
     cursor: "pointer",
     transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-    boxShadow: "0 8px 16px rgba(102, 126, 234, 0.3)",
+    boxShadow: "0 8px 24px rgba(37, 77, 112, 0.4)",
   },
 };
