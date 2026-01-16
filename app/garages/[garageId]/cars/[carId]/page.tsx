@@ -2,9 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { MdTune, MdVolumeUp, MdFlashOn, MdMemory } from "react-icons/md";
-import { GiSteeringWheel, GiCarWheel } from "react-icons/gi";
-import { FaCog } from "react-icons/fa";
 import Header from "../../../../components/Header";
 import Footer from "../../../../components/Footer";
 import DownloadModal from "../../../../components/DownloadModal";
@@ -37,10 +34,9 @@ interface GarageRating {
   ratingCount: number;
 }
 
-// Fix malformed URLs that have double https:// (e.g., supabase prefix + full URL)
+// Fix malformed URLs that have double https://
 const sanitizeImageUrl = (url: string | null | undefined): string => {
   if (!url) return "";
-  // Check if URL contains a second https:// after the first one
   const secondHttpsIndex = url.indexOf("https://", 8);
   if (secondHttpsIndex > 0) {
     return url.substring(secondHttpsIndex);
@@ -48,20 +44,64 @@ const sanitizeImageUrl = (url: string | null | undefined): string => {
   return url;
 };
 
-// Detect device and redirect to app store
-const detectDeviceAndRedirect = () => {
+// Modification icon mapping - matches mobile app exactly
+const MOD_ICONS: { [key: string]: string } = {
+  engine: "https://api.iconify.design/mdi/engine.svg?color=%23567AFD",
+  electronics: "https://api.iconify.design/mdi/chip.svg?color=%23567AFD",
+  wheels: "https://api.iconify.design/mdi/steering.svg?color=%23567AFD",
+  suspension: "https://api.iconify.design/mdi/tune.svg?color=%23567AFD",
+  brakes: "https://api.iconify.design/mdi/car-brake-abs.svg?color=%23567AFD",
+  exhaust: "https://api.iconify.design/mdi/smoke.svg?color=%23567AFD",
+  interior: "https://api.iconify.design/mdi/car-seat.svg?color=%23567AFD",
+  exterior: "https://api.iconify.design/mdi/car-sports.svg?color=%23567AFD",
+  audio: "https://api.iconify.design/mdi/volume-high.svg?color=%23567AFD",
+  electrical: "https://api.iconify.design/mdi/flash.svg?color=%23567AFD",
+  general: "https://api.iconify.design/mdi/cog.svg?color=%23567AFD",
+};
+
+const MOD_LABELS: { [key: string]: string } = {
+  engine: "Engine",
+  electronics: "Electronics",
+  wheels: "Wheels",
+  suspension: "Suspension",
+  brakes: "Brakes",
+  exhaust: "Exhaust",
+  interior: "Interior",
+  exterior: "Exterior",
+  audio: "Audio",
+  electrical: "Electrical",
+  general: "General",
+};
+
+const getModificationIcon = (iconName: string, type: string): string => {
+  const normalizedType = (type || "general").toLowerCase();
+  return MOD_ICONS[iconName] || MOD_ICONS[normalizedType] || MOD_ICONS.general;
+};
+
+const getModificationLabel = (type: string): string => {
+  const normalizedType = (type || "general").toLowerCase();
+  return MOD_LABELS[normalizedType] || "Modification";
+};
+
+// Detect device and redirect to app
+const detectDeviceAndRedirect = (garageId: string, carId: string) => {
   if (typeof window === "undefined") return;
 
   const userAgent = navigator.userAgent || navigator.vendor;
   const isIOS = /iPad|iPhone|iPod/.test(userAgent);
   const isAndroid = /android/i.test(userAgent);
 
-  if (isIOS) {
-    window.location.href = "https://apps.apple.com/us/app/rydora/id6748365405";
-  } else if (isAndroid) {
-    window.location.href =
-      "https://play.google.com/store/apps/details?id=com.rydora.app";
-  }
+  const deepLink = `rydora://garages/${garageId}/cars/${carId}`;
+  window.location.href = deepLink;
+
+  setTimeout(() => {
+    if (isIOS) {
+      window.location.href = "https://apps.apple.com/us/app/rydora/id6748365405";
+    } else if (isAndroid) {
+      window.location.href =
+        "https://play.google.com/store/apps/details?id=com.rydora.app";
+    }
+  }, 2500);
 };
 
 export default function CarDetailsPage() {
@@ -78,29 +118,6 @@ export default function CarDetailsPage() {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [isImageViewerOpen, setIsImageViewerOpen] = useState(false);
 
-  // Icon mapping to match app - using MaterialCommunityIcons names
-  const getModificationIcon = (iconName: string, type: string) => {
-    // Map MaterialCommunityIcons names to available react-icons
-    const iconMap: { [key: string]: React.ReactNode } = {
-      engine: <span style={{ fontSize: "24px" }}>🔧</span>,
-      chip: <MdMemory size={24} color="#254D70" />,
-      steering: <GiSteeringWheel size={24} color="#254D70" />,
-      tune: <MdTune size={24} color="#254D70" />,
-      "car-brake-abs": <span style={{ fontSize: "24px" }}>🛑</span>,
-      smog: <span style={{ fontSize: "24px" }}>💨</span>,
-      seat: <GiCarWheel size={24} color="#254D70" />,
-      "car-sports": <GiCarWheel size={24} color="#254D70" />,
-      "volume-high": <MdVolumeUp size={24} color="#254D70" />,
-      flash: <MdFlashOn size={24} color="#254D70" />,
-      cog: <FaCog size={24} color="#254D70" />,
-    };
-
-    // Try icon name first, then type
-    return (
-      iconMap[iconName] || iconMap[type] || <FaCog size={24} color="#254D70" />
-    );
-  };
-
   useEffect(() => {
     const onScroll = () => setIsScrolled(window.scrollY > 12);
     window.addEventListener("scroll", onScroll);
@@ -114,9 +131,9 @@ export default function CarDetailsPage() {
       try {
         setLoading(true);
         const [carRes, garageRes] = await Promise.all([
-          fetch(`https://rydora.me/api/user-garages/car/${carId}`),
+          fetch(`https://dev.rydora.me/api/user-garages/car/${carId}`),
           fetch(
-            `https://rydora.me/api/user-garages/${garageId}/cars?isPublic=true`
+            `https://dev.rydora.me/api/user-garages/${garageId}/cars?isPublic=true`
           ),
         ]);
 
@@ -126,7 +143,6 @@ export default function CarDetailsPage() {
         const carData = await carRes.json();
         setCar(carData.car);
 
-        // Fetch garage rating
         if (garageRes.ok) {
           const garageData = await garageRes.json();
           setGarageRating({
@@ -144,7 +160,6 @@ export default function CarDetailsPage() {
 
         document.title = title;
 
-        // Update or create meta tags
         const updateMetaTag = (
           name: string,
           content: string,
@@ -200,6 +215,12 @@ export default function CarDetailsPage() {
   if (loading) {
     return (
       <div style={styles.pageContainer}>
+        <style jsx>{`
+          @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+          }
+        `}</style>
         <Header
           isScrolled={isScrolled}
           onDownloadClick={() => setIsDownloadModalOpen(true)}
@@ -236,6 +257,14 @@ export default function CarDetailsPage() {
             <button
               onClick={() => router.push(`/garages/${garageId}`)}
               style={styles.backButton}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "rgba(37, 77, 112, 1)";
+                e.currentTarget.style.transform = "translateY(-2px)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "rgba(37, 77, 112, 0.9)";
+                e.currentTarget.style.transform = "translateY(0)";
+              }}
             >
               Back to Garage
             </button>
@@ -253,52 +282,43 @@ export default function CarDetailsPage() {
   return (
     <div style={styles.pageContainer}>
       <style jsx>{`
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @media (max-width: 1024px) {
+          .modifications-grid {
+            grid-template-columns: 1fr !important;
+          }
+        }
         @media (max-width: 768px) {
+          .car-title {
+            font-size: 28px !important;
+          }
           .hero-card {
             padding: 24px !important;
-          }
-          .car-title {
-            font-size: 32px !important;
-          }
-          .car-year {
-            font-size: 20px !important;
-          }
-          .car-engine {
-            font-size: 16px !important;
-          }
-          .car-header-modern {
-            flex-direction: column;
-            align-items: stretch !important;
-          }
-          .rating-card {
-            width: 100%;
           }
           .content-card {
             padding: 24px !important;
           }
-          .section-title {
-            font-size: 24px !important;
+          .main-image {
+            height: 350px !important;
           }
-          .modifications-grid {
-            grid-template-columns: 1fr !important;
-          }
-          .cta-card {
-            padding: 40px 24px !important;
-          }
-          .cta-title {
-            font-size: 28px !important;
+          .thumbnail {
+            width: 80px !important;
+            height: 60px !important;
           }
         }
         @media (max-width: 480px) {
           .car-title {
-            font-size: 28px !important;
+            font-size: 24px !important;
           }
           .main-image {
-            max-height: 400px !important;
-          }
-          .thumbnail {
-            width: 100px !important;
-            height: 75px !important;
+            height: 280px !important;
           }
         }
       `}</style>
@@ -311,66 +331,82 @@ export default function CarDetailsPage() {
           {/* Back Button */}
           <button
             onClick={() => router.push(`/garages/${garageId}`)}
-            style={styles.backButtonTop}
+            style={styles.backLink}
             onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = "#667eea";
               e.currentTarget.style.color = "#fff";
+              e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.1)";
             }}
             onMouseLeave={(e) => {
+              e.currentTarget.style.color = "rgba(203, 213, 225, 0.8)";
               e.currentTarget.style.backgroundColor = "transparent";
-              e.currentTarget.style.color = "#667eea";
             }}
           >
             ← Back to Garage
           </button>
 
-          {/* Hero Section with Car Info */}
+          {/* Hero Card with Car Info */}
           <div style={styles.heroCard} className="hero-card">
-            <div style={styles.carHeaderModern} className="car-header-modern">
+            <div style={styles.carHeader}>
               <div style={styles.carTitleSection}>
                 <h1 style={styles.carTitle} className="car-title">
                   {car.make} {car.model}
                 </h1>
                 <div style={styles.carMetaRow}>
-                  <span style={styles.carYear} className="car-year">{car.year}</span>
+                  <span style={styles.carYear}>{car.year}</span>
                   {car.engine && (
                     <>
                       <span style={styles.metaDivider}>•</span>
-                      <span style={styles.carEngine} className="car-engine">{car.engine}</span>
+                      <span style={styles.carEngine}>{car.engine}</span>
                     </>
                   )}
                 </div>
               </div>
 
-              {/* Rating Section - Only show if data exists */}
+              {/* Rating Badge */}
               {garageRating && garageRating.ratingCount > 0 && (
-                <div style={styles.ratingCard} className="rating-card">
-                  <div style={styles.ratingContent}>
-                    <div style={styles.starContainer}>
-                      <span style={styles.starIcon}>⭐</span>
-                      <span style={styles.ratingValue}>
-                        {garageRating.rating ? garageRating.rating.toFixed(1) : "N/A"}
-                      </span>
-                    </div>
-                    <span style={styles.ratingCount}>
-                      {garageRating.ratingCount} {garageRating.ratingCount === 1 ? "review" : "reviews"}
-                    </span>
-                  </div>
+                <div style={styles.ratingBadge}>
+                  <span style={styles.starIcon}>⭐</span>
+                  <span style={styles.ratingValue}>
+                    {garageRating.rating ? garageRating.rating.toFixed(1) : "N/A"}
+                  </span>
+                  <span style={styles.ratingCount}>
+                    ({garageRating.ratingCount})
+                  </span>
                 </div>
               )}
             </div>
+
+            {/* Open in App Button */}
+            <button
+              onClick={() => detectDeviceAndRedirect(garageId, carId)}
+              style={styles.openAppButton}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "rgba(37, 77, 112, 1)";
+                e.currentTarget.style.transform = "translateY(-2px)";
+                e.currentTarget.style.boxShadow = "0 12px 32px rgba(37, 77, 112, 0.5)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "rgba(37, 77, 112, 0.9)";
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "0 8px 24px rgba(37, 77, 112, 0.4)";
+              }}
+            >
+              Open in Rydora App
+            </button>
           </div>
 
           {/* Main Image Gallery */}
           {carImages.length > 0 && (
             <div style={styles.imageGallery}>
-              <div style={styles.mainImageContainer}>
+              <div
+                style={styles.mainImageContainer}
+                onClick={() => setIsImageViewerOpen(true)}
+              >
                 <img
                   src={sanitizeImageUrl(carImages[selectedImageIndex]?.url || carImages[0]?.url)}
                   alt={`${car.make} ${car.model}`}
                   style={styles.mainImage}
                   className="main-image"
-                  onClick={() => setIsImageViewerOpen(true)}
                 />
                 {carImages.length > 1 && (
                   <div style={styles.imageCounter}>
@@ -391,6 +427,18 @@ export default function CarDetailsPage() {
                           : {}),
                       }}
                       onClick={() => setSelectedImageIndex(index)}
+                      onMouseEnter={(e) => {
+                        if (selectedImageIndex !== index) {
+                          e.currentTarget.style.opacity = "0.8";
+                          e.currentTarget.style.borderColor = "rgba(37, 77, 112, 0.5)";
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (selectedImageIndex !== index) {
+                          e.currentTarget.style.opacity = "0.5";
+                          e.currentTarget.style.borderColor = "transparent";
+                        }
+                      }}
                     >
                       <img
                         src={sanitizeImageUrl(img.url)}
@@ -406,8 +454,8 @@ export default function CarDetailsPage() {
 
           {/* Videos */}
           {carVideos.length > 0 && (
-            <div style={styles.videoSection}>
-              <h2 style={styles.sectionTitle} className="section-title">Videos</h2>
+            <div style={styles.contentCard} className="content-card">
+              <h2 style={styles.sectionTitle}>Videos</h2>
               <div style={styles.videoGrid}>
                 {carVideos.map((video, index) => (
                   <video
@@ -426,7 +474,7 @@ export default function CarDetailsPage() {
           {/* Description */}
           {car.description && (
             <div style={styles.contentCard} className="content-card">
-              <h2 style={styles.sectionTitle} className="section-title">About This Car</h2>
+              <h2 style={styles.sectionTitle}>About This Car</h2>
               <p style={styles.description}>{car.description}</p>
             </div>
           )}
@@ -434,16 +482,33 @@ export default function CarDetailsPage() {
           {/* Modifications */}
           {car.modifications && car.modifications.length > 0 && (
             <div style={styles.contentCard} className="content-card">
-              <h2 style={styles.sectionTitle} className="section-title">Modifications & Upgrades</h2>
+              <h2 style={styles.sectionTitle}>
+                Modifications & Upgrades ({car.modifications.length})
+              </h2>
               <div style={styles.modificationsGrid} className="modifications-grid">
                 {car.modifications.map((mod, index) => (
-                  <div key={index} style={styles.modificationCard}>
+                  <div
+                    key={index}
+                    style={styles.modificationCard}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.borderColor = "rgba(37, 77, 112, 0.4)";
+                      e.currentTarget.style.backgroundColor = "rgba(37, 77, 112, 0.1)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.08)";
+                      e.currentTarget.style.backgroundColor = "rgba(30, 41, 59, 0.5)";
+                    }}
+                  >
                     <div style={styles.modificationIconWrapper}>
-                      {getModificationIcon(mod.icon || "", mod.type)}
+                      <img
+                        src={getModificationIcon(mod.icon || "", mod.type)}
+                        alt={mod.type}
+                        style={styles.modificationIconImage}
+                      />
                     </div>
                     <div style={styles.modificationContent}>
                       <span style={styles.modificationType}>
-                        {mod.type.charAt(0).toUpperCase() + mod.type.slice(1)}
+                        {getModificationLabel(mod.type)}
                       </span>
                       <span style={styles.modificationText}>{mod.text}</span>
                     </div>
@@ -455,28 +520,26 @@ export default function CarDetailsPage() {
 
           {/* CTA Section */}
           <div style={styles.ctaSection}>
-            <div style={styles.ctaCard} className="cta-card">
-              <h2 style={styles.ctaTitle} className="cta-title">Interested in this car?</h2>
+            <div style={styles.ctaCard}>
+              <h2 style={styles.ctaTitle}>Want to see more details?</h2>
               <p style={styles.ctaDescription}>
-                Download the Rydora app to see full details, leave comments, and connect with the owner
+                Download the Rydora app to leave comments, rate this car, and connect with the owner
               </p>
               <button
-                onClick={detectDeviceAndRedirect}
+                onClick={() => setIsDownloadModalOpen(true)}
                 style={styles.ctaButton}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = "#5568d3";
+                  e.currentTarget.style.background = "linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)";
                   e.currentTarget.style.transform = "translateY(-2px)";
-                  e.currentTarget.style.boxShadow =
-                    "0 12px 24px rgba(102, 126, 234, 0.5)";
+                  e.currentTarget.style.boxShadow = "0 12px 32px rgba(59, 130, 246, 0.5)";
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = "#667eea";
+                  e.currentTarget.style.background = "linear-gradient(135deg, #254D70 0%, #1E3A5F 100%)";
                   e.currentTarget.style.transform = "translateY(0)";
-                  e.currentTarget.style.boxShadow =
-                    "0 8px 16px rgba(102, 126, 234, 0.3)";
+                  e.currentTarget.style.boxShadow = "0 8px 24px rgba(37, 77, 112, 0.4)";
                 }}
               >
-                Open in Rydora App
+                Download Rydora App
               </button>
             </div>
           </div>
@@ -489,7 +552,7 @@ export default function CarDetailsPage() {
           style={styles.imageViewerOverlay}
           onClick={() => setIsImageViewerOpen(false)}
         >
-          <div style={styles.imageViewerContent}>
+          <div style={styles.imageViewerContent} onClick={(e) => e.stopPropagation()}>
             <button
               style={styles.imageViewerClose}
               onClick={() => setIsImageViewerOpen(false)}
@@ -527,6 +590,9 @@ export default function CarDetailsPage() {
                 </button>
               </>
             )}
+            <div style={styles.imageViewerCounter}>
+              {selectedImageIndex + 1} / {carImages.length}
+            </div>
           </div>
         </div>
       )}
@@ -545,102 +611,115 @@ const styles: { [key: string]: React.CSSProperties } = {
     minHeight: "100vh",
     display: "flex",
     flexDirection: "column",
-    backgroundColor: "#f8fafc",
+    background: "linear-gradient(180deg, #070b12 0%, #0a1020 60%, #070b12 100%)",
+    color: "#e6ecf7",
   },
   contentWrapper: {
     flex: 1,
-    padding: "0",
-    paddingTop: "80px",
+    paddingTop: "100px",
+    paddingBottom: "60px",
   },
   container: {
-    maxWidth: "1400px",
+    maxWidth: "1000px",
     margin: "0 auto",
-    padding: "20px",
+    padding: "0 20px",
+  },
+  backLink: {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "8px",
+    padding: "10px 16px",
+    marginBottom: "24px",
+    fontSize: "14px",
+    fontWeight: "500",
+    color: "rgba(203, 213, 225, 0.8)",
+    backgroundColor: "transparent",
+    border: "none",
+    borderRadius: "8px",
+    cursor: "pointer",
+    transition: "all 0.2s ease",
   },
   loadingWrapper: {
-    textAlign: "center",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
     padding: "100px 20px",
   },
   loadingSpinner: {
-    width: "50px",
-    height: "50px",
-    border: "4px solid #e2e8f0",
-    borderTop: "4px solid #667eea",
+    width: "48px",
+    height: "48px",
+    border: "4px solid rgba(37, 77, 112, 0.2)",
+    borderTop: "4px solid #254D70",
     borderRadius: "50%",
     animation: "spin 1s linear infinite",
-    margin: "0 auto 20px",
+    marginBottom: "20px",
   },
   loadingMessage: {
-    fontSize: "18px",
-    color: "#64748b",
+    fontSize: "16px",
+    color: "rgba(203, 213, 225, 0.7)",
   },
   errorWrapper: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
     textAlign: "center",
-    maxWidth: "500px",
     padding: "100px 20px",
   },
   errorIcon: {
     fontSize: "80px",
-    marginBottom: "20px",
+    marginBottom: "24px",
+    opacity: 0.5,
   },
   errorTitle: {
-    fontSize: "32px",
+    fontSize: "28px",
     fontWeight: "700",
-    color: "#1e293b",
+    color: "#fff",
     marginBottom: "12px",
   },
   errorMessage: {
-    fontSize: "18px",
-    color: "#64748b",
+    fontSize: "16px",
+    color: "rgba(203, 213, 225, 0.7)",
     marginBottom: "32px",
-    lineHeight: "1.6",
+    maxWidth: "400px",
   },
   backButton: {
     padding: "14px 32px",
     fontSize: "16px",
     fontWeight: "600",
     color: "#fff",
-    backgroundColor: "#667eea",
-    border: "none",
+    backgroundColor: "rgba(37, 77, 112, 0.9)",
+    border: "1px solid rgba(37, 77, 112, 0.5)",
     borderRadius: "12px",
     cursor: "pointer",
-    transition: "all 0.2s",
-  },
-  backButtonTop: {
-    padding: "12px 24px",
-    fontSize: "16px",
-    fontWeight: "600",
-    color: "#667eea",
-    backgroundColor: "transparent",
-    border: "2px solid #667eea",
-    borderRadius: "12px",
-    cursor: "pointer",
-    transition: "all 0.3s",
-    marginBottom: "32px",
+    transition: "all 0.3s ease",
   },
   heroCard: {
-    backgroundColor: "#fff",
+    backgroundColor: "rgba(17, 24, 38, 0.8)",
+    border: "1px solid rgba(255, 255, 255, 0.06)",
     borderRadius: "24px",
-    padding: "40px",
-    marginBottom: "40px",
-    boxShadow: "0 10px 40px rgba(0, 0, 0, 0.08)",
+    padding: "32px",
+    marginBottom: "24px",
+    boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3)",
   },
-  carHeaderModern: {
+  carHeader: {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "flex-start",
     flexWrap: "wrap",
-    gap: "24px",
+    gap: "16px",
+    marginBottom: "24px",
   },
   carTitleSection: {
     flex: 1,
-    minWidth: "280px",
+    minWidth: "200px",
   },
   carTitle: {
-    fontSize: "42px",
-    fontWeight: "900",
-    color: "#1e293b",
-    marginBottom: "12px",
+    fontSize: "36px",
+    fontWeight: "800",
+    color: "#fff",
+    marginBottom: "8px",
     lineHeight: "1.2",
   },
   carMetaRow: {
@@ -650,155 +729,154 @@ const styles: { [key: string]: React.CSSProperties } = {
     flexWrap: "wrap",
   },
   carYear: {
-    fontSize: "24px",
-    color: "#667eea",
+    fontSize: "20px",
+    color: "#567AFD",
     fontWeight: "700",
   },
   metaDivider: {
-    fontSize: "20px",
-    color: "#cbd5e1",
+    fontSize: "16px",
+    color: "rgba(148, 163, 184, 0.5)",
   },
   carEngine: {
-    fontSize: "20px",
-    color: "#64748b",
-    fontWeight: "600",
+    fontSize: "16px",
+    color: "rgba(148, 163, 184, 0.9)",
+    fontWeight: "500",
   },
-  ratingCard: {
-    backgroundColor: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-    borderRadius: "16px",
-    padding: "20px 28px",
-    boxShadow: "0 8px 24px rgba(102, 126, 234, 0.3)",
-  },
-  ratingContent: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    gap: "8px",
-  },
-  starContainer: {
+  ratingBadge: {
     display: "flex",
     alignItems: "center",
-    gap: "8px",
+    gap: "6px",
+    padding: "10px 16px",
+    backgroundColor: "rgba(37, 77, 112, 0.3)",
+    border: "1px solid rgba(37, 77, 112, 0.5)",
+    borderRadius: "12px",
   },
   starIcon: {
-    fontSize: "32px",
+    fontSize: "18px",
   },
   ratingValue: {
-    fontSize: "36px",
-    fontWeight: "900",
+    fontSize: "18px",
+    fontWeight: "700",
     color: "#fff",
   },
   ratingCount: {
     fontSize: "14px",
-    color: "rgba(255, 255, 255, 0.9)",
-    fontWeight: "500",
+    color: "rgba(148, 163, 184, 0.8)",
+  },
+  openAppButton: {
+    width: "100%",
+    padding: "16px 32px",
+    fontSize: "16px",
+    fontWeight: "600",
+    color: "#fff",
+    backgroundColor: "rgba(37, 77, 112, 0.9)",
+    border: "1px solid rgba(37, 77, 112, 0.5)",
+    borderRadius: "12px",
+    cursor: "pointer",
+    transition: "all 0.3s ease",
+    boxShadow: "0 8px 24px rgba(37, 77, 112, 0.4)",
   },
   imageGallery: {
-    marginBottom: "40px",
+    marginBottom: "24px",
   },
   mainImageContainer: {
     position: "relative",
     width: "100%",
-    borderRadius: "24px",
+    borderRadius: "20px",
     overflow: "hidden",
-    marginBottom: "20px",
+    marginBottom: "16px",
     cursor: "pointer",
-    backgroundColor: "#000",
-    boxShadow: "0 10px 40px rgba(0, 0, 0, 0.15)",
+    backgroundColor: "rgba(17, 24, 38, 0.8)",
+    boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3)",
   },
   mainImage: {
     width: "100%",
-    height: "auto",
-    objectFit: "contain",
-    maxHeight: "700px",
+    height: "500px",
+    objectFit: "cover",
+    display: "block",
   },
   imageCounter: {
     position: "absolute",
-    top: "20px",
-    right: "20px",
-    backgroundColor: "rgba(0, 0, 0, 0.8)",
-    backdropFilter: "blur(10px)",
+    top: "16px",
+    right: "16px",
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
+    backdropFilter: "blur(8px)",
     color: "#fff",
-    padding: "10px 20px",
-    borderRadius: "24px",
-    fontSize: "15px",
-    fontWeight: "700",
+    padding: "8px 16px",
+    borderRadius: "20px",
+    fontSize: "14px",
+    fontWeight: "600",
   },
   thumbnailContainer: {
     display: "flex",
-    gap: "16px",
+    gap: "12px",
     overflowX: "auto",
-    paddingBottom: "12px",
+    paddingBottom: "8px",
   },
   thumbnail: {
     flexShrink: 0,
-    width: "140px",
-    height: "100px",
-    borderRadius: "16px",
+    width: "100px",
+    height: "75px",
+    borderRadius: "12px",
     overflow: "hidden",
     cursor: "pointer",
-    border: "3px solid transparent",
-    transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-    opacity: 0.6,
+    border: "2px solid transparent",
+    transition: "all 0.3s ease",
+    opacity: 0.5,
   },
   thumbnailActive: {
-    borderColor: "#667eea",
+    borderColor: "#567AFD",
     opacity: 1,
-    transform: "scale(1.05)",
-    boxShadow: "0 4px 12px rgba(102, 126, 234, 0.4)",
+    boxShadow: "0 4px 12px rgba(86, 122, 253, 0.4)",
   },
   thumbnailImage: {
     width: "100%",
     height: "100%",
     objectFit: "cover",
   },
-  videoSection: {
-    marginBottom: "40px",
+  contentCard: {
+    backgroundColor: "rgba(17, 24, 38, 0.8)",
+    border: "1px solid rgba(255, 255, 255, 0.06)",
+    borderRadius: "20px",
+    padding: "32px",
+    marginBottom: "24px",
+    boxShadow: "0 8px 24px rgba(0, 0, 0, 0.2)",
+  },
+  sectionTitle: {
+    fontSize: "20px",
+    fontWeight: "700",
+    color: "#fff",
+    marginBottom: "20px",
+  },
+  description: {
+    fontSize: "16px",
+    color: "rgba(203, 213, 225, 0.9)",
+    lineHeight: "1.7",
+    whiteSpace: "pre-wrap",
   },
   videoGrid: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
-    gap: "24px",
+    gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+    gap: "16px",
   },
   video: {
     width: "100%",
-    borderRadius: "20px",
+    borderRadius: "12px",
     backgroundColor: "#000",
-    boxShadow: "0 8px 24px rgba(0, 0, 0, 0.12)",
-  },
-  contentCard: {
-    backgroundColor: "#fff",
-    borderRadius: "24px",
-    padding: "40px",
-    marginBottom: "40px",
-    boxShadow: "0 10px 40px rgba(0, 0, 0, 0.08)",
-  },
-  sectionTitle: {
-    fontSize: "28px",
-    fontWeight: "800",
-    color: "#1e293b",
-    marginBottom: "24px",
-  },
-  description: {
-    fontSize: "18px",
-    color: "#475569",
-    lineHeight: "1.8",
-    whiteSpace: "pre-wrap",
   },
   modificationsGrid: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
-    gap: "20px",
+    gridTemplateColumns: "repeat(2, 1fr)",
+    gap: "16px",
   },
   modificationCard: {
     display: "flex",
     gap: "16px",
     padding: "20px",
-    backgroundColor: "#f8fafc",
+    backgroundColor: "rgba(30, 41, 59, 0.5)",
     borderRadius: "16px",
-    border: "2px solid #e2e8f0",
-    transition: "all 0.2s",
+    border: "1px solid rgba(255, 255, 255, 0.08)",
+    transition: "all 0.2s ease",
   },
   modificationIconWrapper: {
     display: "flex",
@@ -807,65 +885,69 @@ const styles: { [key: string]: React.CSSProperties } = {
     flexShrink: 0,
     width: "48px",
     height: "48px",
-    backgroundColor: "#fff",
+    backgroundColor: "rgba(37, 77, 112, 0.2)",
     borderRadius: "12px",
-    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.08)",
+  },
+  modificationIconImage: {
+    width: "28px",
+    height: "28px",
   },
   modificationContent: {
     display: "flex",
     flexDirection: "column",
-    gap: "6px",
+    gap: "4px",
     flex: 1,
+    minWidth: 0,
   },
   modificationType: {
-    fontSize: "13px",
+    fontSize: "12px",
     fontWeight: "700",
-    color: "#667eea",
+    color: "#567AFD",
     textTransform: "uppercase",
-    letterSpacing: "0.8px",
+    letterSpacing: "0.5px",
   },
   modificationText: {
-    fontSize: "16px",
-    color: "#475569",
+    fontSize: "15px",
+    color: "rgba(203, 213, 225, 0.9)",
     lineHeight: "1.5",
     fontWeight: "500",
   },
   ctaSection: {
-    marginBottom: "60px",
+    marginTop: "16px",
   },
   ctaCard: {
-    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+    backgroundColor: "rgba(17, 24, 38, 0.8)",
+    border: "1px solid rgba(255, 255, 255, 0.06)",
     borderRadius: "24px",
-    padding: "60px 40px",
+    padding: "48px 32px",
     textAlign: "center",
-    boxShadow: "0 20px 60px rgba(102, 126, 234, 0.3)",
+    boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3)",
   },
   ctaTitle: {
-    fontSize: "36px",
-    fontWeight: "900",
+    fontSize: "24px",
+    fontWeight: "800",
     color: "#fff",
-    marginBottom: "16px",
-    textShadow: "0 2px 20px rgba(0, 0, 0, 0.2)",
+    marginBottom: "12px",
   },
   ctaDescription: {
-    fontSize: "18px",
-    color: "rgba(255, 255, 255, 0.9)",
-    marginBottom: "32px",
+    fontSize: "16px",
+    color: "rgba(203, 213, 225, 0.8)",
+    marginBottom: "24px",
     lineHeight: "1.6",
-    maxWidth: "600px",
-    margin: "0 auto 32px",
+    maxWidth: "450px",
+    margin: "0 auto 24px",
   },
   ctaButton: {
-    padding: "18px 48px",
-    fontSize: "18px",
+    padding: "16px 40px",
+    fontSize: "16px",
     fontWeight: "700",
-    color: "#667eea",
-    backgroundColor: "#fff",
+    color: "#fff",
+    background: "linear-gradient(135deg, #254D70 0%, #1E3A5F 100%)",
     border: "none",
-    borderRadius: "14px",
+    borderRadius: "12px",
     cursor: "pointer",
     transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-    boxShadow: "0 8px 16px rgba(102, 126, 234, 0.3)",
+    boxShadow: "0 8px 24px rgba(37, 77, 112, 0.4)",
   },
   imageViewerOverlay: {
     position: "fixed",
@@ -878,7 +960,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    padding: "40px",
+    padding: "20px",
   },
   imageViewerContent: {
     position: "relative",
@@ -892,10 +974,10 @@ const styles: { [key: string]: React.CSSProperties } = {
     position: "absolute",
     top: "20px",
     right: "20px",
-    width: "40px",
-    height: "40px",
+    width: "48px",
+    height: "48px",
     borderRadius: "50%",
-    backgroundColor: "rgba(255, 255, 255, 0.2)",
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
     color: "#fff",
     border: "none",
     fontSize: "24px",
@@ -904,46 +986,62 @@ const styles: { [key: string]: React.CSSProperties } = {
     alignItems: "center",
     justifyContent: "center",
     zIndex: 10000,
+    transition: "background-color 0.2s",
   },
   imageViewerImage: {
-    maxWidth: "100%",
-    maxHeight: "100%",
+    maxWidth: "90%",
+    maxHeight: "85%",
     objectFit: "contain",
+    borderRadius: "8px",
   },
   imageViewerNavLeft: {
     position: "absolute",
     left: "20px",
     top: "50%",
     transform: "translateY(-50%)",
-    width: "50px",
-    height: "50px",
+    width: "56px",
+    height: "56px",
     borderRadius: "50%",
-    backgroundColor: "rgba(255, 255, 255, 0.2)",
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
     color: "#fff",
     border: "none",
-    fontSize: "32px",
+    fontSize: "36px",
     cursor: "pointer",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     zIndex: 10000,
+    transition: "background-color 0.2s",
   },
   imageViewerNavRight: {
     position: "absolute",
     right: "20px",
     top: "50%",
     transform: "translateY(-50%)",
-    width: "50px",
-    height: "50px",
+    width: "56px",
+    height: "56px",
     borderRadius: "50%",
-    backgroundColor: "rgba(255, 255, 255, 0.2)",
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
     color: "#fff",
     border: "none",
-    fontSize: "32px",
+    fontSize: "36px",
     cursor: "pointer",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     zIndex: 10000,
+    transition: "background-color 0.2s",
+  },
+  imageViewerCounter: {
+    position: "absolute",
+    bottom: "30px",
+    left: "50%",
+    transform: "translateX(-50%)",
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
+    color: "#fff",
+    padding: "10px 24px",
+    borderRadius: "24px",
+    fontSize: "16px",
+    fontWeight: "600",
   },
 };
