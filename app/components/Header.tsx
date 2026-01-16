@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 import { FiDownload } from "react-icons/fi";
 import { Mail, Menu, X } from "lucide-react";
@@ -12,14 +13,33 @@ interface HeaderProps {
 
 export default function Header({ isScrolled, onDownloadClick }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
+  const router = useRouter();
 
   const navLinks = [
-    { href: "https://rydora.me", label: "Home" },
+    { href: "/", label: "Home" },
     { href: "/garages", label: "Garages" },
     { href: "#features", label: "Features" },
     { href: "#gallery", label: "Gallery" },
     { href: "#about", label: "About" },
   ];
+
+  // Handle navigation for anchor links
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    if (href.startsWith("#")) {
+      e.preventDefault();
+      // If we're on the home page, just scroll to the section
+      if (pathname === "/") {
+        const element = document.querySelector(href);
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth" });
+        }
+      } else {
+        // Navigate to home page with hash
+        router.push(`/${href}`);
+      }
+    }
+  };
 
   return (
     <nav
@@ -52,7 +72,7 @@ export default function Header({ isScrolled, onDownloadClick }: HeaderProps) {
         >
           {/* Logo */}
           <a
-            href="https://rydora.me"
+            href="/"
             style={{
               display: "flex",
               alignItems: "center",
@@ -100,6 +120,7 @@ export default function Header({ isScrolled, onDownloadClick }: HeaderProps) {
               <a
                 key={link.href}
                 href={link.href}
+                onClick={(e) => handleNavClick(e, link.href)}
                 style={{
                   position: "relative",
                   borderRadius: "8px",
@@ -273,7 +294,10 @@ export default function Header({ isScrolled, onDownloadClick }: HeaderProps) {
                 <a
                   key={link.href}
                   href={link.href}
-                  onClick={() => setMobileMenuOpen(false)}
+                  onClick={(e) => {
+                    handleNavClick(e, link.href);
+                    setMobileMenuOpen(false);
+                  }}
                   style={{
                     display: "block",
                     borderRadius: "8px",
