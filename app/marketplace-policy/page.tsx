@@ -1,4 +1,13 @@
+import { Metadata } from "next";
 import PolicyLayout from "../components/PolicyLayout";
+
+export const metadata: Metadata = {
+  title: "Marketplace Policy",
+  description: "Rydora's Marketplace Policy covers buying, selling, prohibited items, fees, shipping, returns, and dispute resolution. Understand the rules for marketplace participation.",
+  alternates: {
+    canonical: "https://rydora.me/marketplace-policy",
+  },
+};
 
 export default function MarketplacePolicyPage() {
   const content = `RYDORA MARKETPLACE POLICY (FULL LEGAL VERSION)

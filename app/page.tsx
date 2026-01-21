@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 import Header from "./components/Header";
-import DownloadModal from "./components/DownloadModal";
 import Hero from "./components/Hero";
 import Screenshots from "./components/Screenshots";
 import Features from "./components/Features";
@@ -11,45 +11,19 @@ import About from "./components/About";
 import Download from "./components/Download";
 import Footer from "./components/Footer";
 
+// Dynamic import for modal - only loaded when needed
+const DownloadModal = dynamic(() => import("./components/DownloadModal"), {
+  ssr: false,
+});
+
 export default function Home() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
 
   useEffect(() => {
     const onScroll = () => setIsScrolled(window.scrollY > 12);
-    window.addEventListener("scroll", onScroll);
-
-    // Aggressively remove Next.js logo
-    const removeNextLogo = () => {
-      const logo = document.getElementById("next-logo");
-      if (logo) {
-        logo.remove();
-      }
-      // Also try querySelector
-      const logos = document.querySelectorAll('#next-logo, [id="next-logo"]');
-      logos.forEach((el) => el.remove());
-    };
-
-    // Run immediately and multiple times
-    removeNextLogo();
-    setTimeout(removeNextLogo, 0);
-    setTimeout(removeNextLogo, 100);
-    setTimeout(removeNextLogo, 500);
-    setTimeout(removeNextLogo, 1000);
-
-    // Watch for DOM changes
-    const observer = new MutationObserver(() => {
-      removeNextLogo();
-    });
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true,
-    });
-
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      observer.disconnect();
-    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   return (

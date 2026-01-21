@@ -1,4 +1,13 @@
+import { Metadata } from "next";
 import PolicyLayout from "../components/PolicyLayout";
+
+export const metadata: Metadata = {
+  title: "App Store Compliance Policies",
+  description: "Rydora's App Store Compliance Policies for Apple App Store and Google Play. Learn about our data privacy, permissions, content safety, and marketplace compliance.",
+  alternates: {
+    canonical: "https://rydora.me/app-store-policies",
+  },
+};
 
 export default function AppStorePoliciesPage() {
   const content = `RYDORA APP STORE COMPLIANCE POLICIES

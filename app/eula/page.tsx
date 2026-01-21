@@ -1,4 +1,13 @@
+import { Metadata } from "next";
 import PolicyLayout from "../components/PolicyLayout";
+
+export const metadata: Metadata = {
+  title: "End-User License Agreement (EULA)",
+  description: "Rydora's End-User License Agreement governs your use of the mobile app. Learn about licensing, user responsibilities, and content policies.",
+  alternates: {
+    canonical: "https://rydora.me/eula",
+  },
+};
 
 export default function EULAPage() {
   const content = `END-USER LICENSE AGREEMENT (EULA)

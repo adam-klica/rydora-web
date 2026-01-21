@@ -1,10 +1,15 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import DownloadModal from "../components/DownloadModal";
+import { useScrollDetection } from "../hooks/useScrollDetection";
+
+const DownloadModal = dynamic(() => import("../components/DownloadModal"), {
+  ssr: false,
+});
 
 interface GarageData {
   id: string;
@@ -29,15 +34,9 @@ export default function GaragesPage() {
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
-  const [isScrolled, setIsScrolled] = useState(false);
+  const isScrolled = useScrollDetection(12);
   const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
   const [selectedRegion, setSelectedRegion] = useState<string>("eu");
-
-  useEffect(() => {
-    const onScroll = () => setIsScrolled(window.scrollY > 12);
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
 
   const fetchGarages = useCallback(
     async (reset = false) => {
@@ -283,6 +282,7 @@ export default function GaragesPage() {
                         <img
                           src={garage.coverImageUrl}
                           alt={garage.name}
+                          loading="lazy"
                           style={styles.garageImage}
                         />
                       ) : (

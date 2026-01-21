@@ -1,4 +1,13 @@
+import { Metadata } from "next";
 import PolicyLayout from "../components/PolicyLayout";
+
+export const metadata: Metadata = {
+  title: "Privacy Policy",
+  description: "Learn how Rydora collects, uses, stores, and protects your personal data. Our privacy policy covers GDPR compliance, data retention, and your rights.",
+  alternates: {
+    canonical: "https://rydora.me/privacy-policy",
+  },
+};
 
 export default function PrivacyPolicyPage() {
   const content = `RYDORA – PRIVACY POLICY

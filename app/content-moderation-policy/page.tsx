@@ -1,4 +1,13 @@
+import { Metadata } from "next";
 import PolicyLayout from "../components/PolicyLayout";
+
+export const metadata: Metadata = {
+  title: "Content Moderation Policy",
+  description: "Learn about Rydora's content moderation standards, automated detection tools, enforcement procedures, and appeals process for user-generated content.",
+  alternates: {
+    canonical: "https://rydora.me/content-moderation-policy",
+  },
+};
 
 export default function ContentModerationPolicyPage() {
   const content = `RYDORA CONTENT MODERATION POLICY

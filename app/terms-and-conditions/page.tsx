@@ -1,4 +1,13 @@
+import { Metadata } from "next";
 import PolicyLayout from "../components/PolicyLayout";
+
+export const metadata: Metadata = {
+  title: "Terms & Conditions",
+  description: "Read Rydora's Terms & Conditions. Learn about user eligibility, account registration, content rights, marketplace participation, and platform usage rules.",
+  alternates: {
+    canonical: "https://rydora.me/terms-and-conditions",
+  },
+};
 
 export default function TermsAndConditionsPage() {
   const content = `RYDORA – TERMS & CONDITIONS

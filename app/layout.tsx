@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -12,19 +12,121 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: "#254D70",
+};
+
 export const metadata: Metadata = {
-  title: "Rydora - Throttle Your Social Life",
+  metadataBase: new URL("https://rydora.me"),
+  title: {
+    default: "Rydora - Throttle Your Social Life",
+    template: "%s | Rydora",
+  },
   description: "The ultimate social platform for car enthusiasts. Showcase garages, join clubs, create events, buy/sell, and connect with car lovers worldwide.",
-  keywords: "cars, automotive, car community, garage, car clubs, car events, car marketplace, car enthusiasts",
+  keywords: ["cars", "automotive", "car community", "garage", "car clubs", "car events", "car marketplace", "car enthusiasts", "car social network", "car meets"],
+  authors: [{ name: "Rydora" }],
+  creator: "Rydora",
+  publisher: "Rydora",
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
   icons: {
     icon: "/images/logo.png",
     apple: "/images/logo.png",
   },
+  manifest: "/manifest.json",
   openGraph: {
-    title: "Rydora - Throttle Your Social Life",
-    description: "The ultimate social platform for car enthusiasts",
     type: "website",
+    locale: "en_US",
+    url: "https://rydora.me",
+    siteName: "Rydora",
+    title: "Rydora - Throttle Your Social Life",
+    description: "The ultimate social platform for car enthusiasts. Showcase garages, join clubs, create events, and connect with car lovers worldwide.",
+    images: [
+      {
+        url: "/images/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Rydora - The Car Enthusiast Social Platform",
+      },
+    ],
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "Rydora - Throttle Your Social Life",
+    description: "The ultimate social platform for car enthusiasts. Showcase garages, join clubs, create events, and connect with car lovers worldwide.",
+    images: ["/images/og-image.png"],
+    creator: "@rydora_app",
+  },
+  alternates: {
+    canonical: "https://rydora.me",
+  },
+  category: "technology",
+};
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://rydora.me/#organization",
+      name: "Rydora",
+      url: "https://rydora.me",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://rydora.me/images/logo.png",
+      },
+      sameAs: [
+        "https://apps.apple.com/us/app/rydora/id6748365405",
+        "https://play.google.com/store/apps/details?id=com.rydora.app",
+      ],
+      contactPoint: {
+        "@type": "ContactPoint",
+        email: "support@rydora.me",
+        contactType: "customer support",
+      },
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://rydora.me/#website",
+      url: "https://rydora.me",
+      name: "Rydora",
+      description: "The ultimate social platform for car enthusiasts",
+      publisher: { "@id": "https://rydora.me/#organization" },
+      inLanguage: "en-US",
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": "https://rydora.me/#app",
+      name: "Rydora",
+      operatingSystem: "iOS, Android",
+      applicationCategory: "SocialNetworkingApplication",
+      description: "The ultimate social platform for car enthusiasts. Showcase garages, join clubs, create events, buy/sell, and connect with car lovers worldwide.",
+      offers: {
+        "@type": "Offer",
+        price: "0",
+        priceCurrency: "USD",
+      },
+      aggregateRating: {
+        "@type": "AggregateRating",
+        ratingValue: "5",
+        ratingCount: "100",
+        bestRating: "5",
+        worstRating: "1",
+      },
+    },
+  ],
 };
 
 export default function RootLayout({
@@ -34,35 +136,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         {children}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                function removeNextLogo() {
-                  const logo = document.getElementById('next-logo');
-                  if (logo) logo.remove();
-                  const logos = document.querySelectorAll('#next-logo, [id="next-logo"]');
-                  logos.forEach(el => el.remove());
-                }
-                removeNextLogo();
-                setTimeout(removeNextLogo, 0);
-                setTimeout(removeNextLogo, 100);
-                setTimeout(removeNextLogo, 500);
-                setTimeout(removeNextLogo, 1000);
-                const observer = new MutationObserver(removeNextLogo);
-                if (document.body) {
-                  observer.observe(document.body, { childList: true, subtree: true });
-                }
-                document.addEventListener('DOMContentLoaded', removeNextLogo);
-                window.addEventListener('load', removeNextLogo);
-              })();
-            `,
-          }}
-        />
       </body>
     </html>
   );

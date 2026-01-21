@@ -1,0 +1,16 @@
+# Rydora robots.txt
+# https://rydora.me
+
+User-agent: *
+Allow: /
+
+# Sitemaps
+Sitemap: https://rydora.me/sitemap.xml
+
+# Crawl-delay for polite crawling
+Crawl-delay: 1
+
+# Block sensitive paths
+Disallow: /api/
+Disallow: /_next/
+Disallow: /private/

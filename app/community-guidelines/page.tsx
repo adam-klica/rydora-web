@@ -1,4 +1,13 @@
+import { Metadata } from "next";
 import PolicyLayout from "../components/PolicyLayout";
+
+export const metadata: Metadata = {
+  title: "Community Guidelines",
+  description: "Rydora's Community Guidelines define content standards and prohibited behaviors. Learn about our safety standards, prohibited content, and enforcement actions.",
+  alternates: {
+    canonical: "https://rydora.me/community-guidelines",
+  },
+};
 
 export default function CommunityGuidelinesPage() {
   const content = `RYDORA COMMUNITY GUIDELINES 
