@@ -23,7 +23,7 @@ interface ClubData {
 async function getClubData(clubId: string): Promise<ClubData | null> {
   try {
     const res = await fetch(
-      `https://rydora.me/api/clubs/${clubId}`,
+      `https://dev.rydora.me/api/clubs/${clubId}`,
       { next: { revalidate: 60 } }
     );
     if (!res.ok) return null;

@@ -73,7 +73,7 @@ export default function ClubClient({ clubId, initialData }: ClubClientProps) {
     const fetchClub = async () => {
       try {
         setLoading(true);
-        const res = await fetch(`https://rydora.me/api/clubs/${clubId}`);
+        const res = await fetch(`https://dev.rydora.me/api/clubs/${clubId}`);
         if (!res.ok) {
           throw new Error("Club not found");
         }
