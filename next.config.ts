@@ -8,6 +8,11 @@ const nextConfig: NextConfig = {
         hostname: "oyydkivlbjkxzuspwqsk.supabase.co",
         pathname: "/storage/v1/**",
       },
+      {
+        protocol: "https",
+        hostname: "media.rydora.me",
+        pathname: "/**",
+      },
     ],
     unoptimized: false,
   },
