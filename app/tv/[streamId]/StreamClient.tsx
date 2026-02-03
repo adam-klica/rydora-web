@@ -11,22 +11,23 @@ const DownloadModal = dynamic(() => import("../../components/DownloadModal"), {
 });
 
 interface StreamData {
-  _id: string;
+  id: string;
   title: string;
   description?: string;
   category: string;
   status: "SCHEDULED" | "LIVE" | "ENDED";
   thumbnailUrl?: string;
+  currentViewers?: number;
   streamer: {
-    _id: string;
-    username: string;
+    id: string;
+    displayName?: string;
     user?: {
+      username: string;
       profileImage?: string;
     };
   };
   scheduledAt?: string;
   startedAt?: string;
-  viewerCount?: number;
 }
 
 // Fix malformed URLs that have double https://
@@ -120,8 +121,9 @@ export default function StreamClient({ streamId, initialData }: StreamClientProp
     });
   };
 
-  // Get profile image from user object
+  // Get profile image and username from user object
   const profileImage = stream?.streamer?.user?.profileImage;
+  const streamerName = stream?.streamer?.displayName || stream?.streamer?.user?.username || "Unknown";
 
   if (!stream) {
     return (
@@ -254,16 +256,16 @@ export default function StreamClient({ streamId, initialData }: StreamClientProp
                 {profileImage ? (
                   <img
                     src={sanitizeImageUrl(profileImage)}
-                    alt={stream.streamer.username}
+                    alt={streamerName}
                     style={styles.userAvatar}
                   />
                 ) : (
                   <div style={styles.userAvatarPlaceholder}>
-                    {stream.streamer.username.charAt(0).toUpperCase()}
+                    {streamerName.charAt(0).toUpperCase()}
                   </div>
                 )}
                 <div style={styles.userDetails}>
-                  <p style={styles.username}>@{stream.streamer.username}</p>
+                  <p style={styles.username}>@{streamerName}</p>
                   <p style={styles.userSubtext}>Streamer on RydoraTV</p>
                 </div>
               </div>
@@ -286,7 +288,7 @@ export default function StreamClient({ streamId, initialData }: StreamClientProp
                   <div style={styles.statCard}>
                     <span style={styles.statLabel}>Viewers</span>
                     <span style={styles.statValue} className="stat-value">
-                      {stream.viewerCount || 0}
+                      {stream.currentViewers || 0}
                     </span>
                   </div>
                 )}
@@ -321,7 +323,7 @@ export default function StreamClient({ streamId, initialData }: StreamClientProp
                   : "Don't miss this stream!"}
               </h2>
               <p style={styles.ctaDescription}>
-                Download the Rydora app to watch {stream.streamer.username}&apos;s streams,
+                Download the Rydora app to watch {streamerName}&apos;s streams,
                 chat with other viewers, and discover amazing automotive content.
               </p>
               <button

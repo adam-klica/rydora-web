@@ -1,33 +1,26 @@
 import { Metadata } from 'next';
 import StreamClient from './StreamClient';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://dev.rydora.me';
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://dev.rydora.me/api';
 
 interface StreamData {
-  _id: string;
+  id: string;
   title: string;
   description?: string;
   category: string;
   status: 'SCHEDULED' | 'LIVE' | 'ENDED';
   thumbnailUrl?: string;
+  currentViewers?: number;
   streamer: {
-    _id: string;
-    username: string;
+    id: string;
+    displayName?: string;
     user?: {
+      username: string;
       profileImage?: string;
     };
   };
   scheduledAt?: string;
   startedAt?: string;
-  viewerCount?: number;
-}
-
-interface StreamerData {
-  _id: string;
-  username: string;
-  user?: {
-    profileImage?: string;
-  };
 }
 
 async function getStream(streamId: string): Promise<StreamData | null> {
@@ -36,26 +29,10 @@ async function getStream(streamId: string): Promise<StreamData | null> {
       next: { revalidate: 60 },
     });
     if (!res.ok) return null;
-    const stream = await res.json();
+    const data = await res.json();
 
-    // If we have a streamer ID but no user profile image, fetch the full streamer details
-    if (stream?.streamer?._id && !stream.streamer?.user?.profileImage) {
-      try {
-        const streamerRes = await fetch(`${API_BASE}/rydora-tv/streamers/${stream.streamer._id}`, {
-          next: { revalidate: 300 },
-        });
-        if (streamerRes.ok) {
-          const streamerData: StreamerData = await streamerRes.json();
-          // Merge the full streamer data
-          stream.streamer = {
-            ...stream.streamer,
-            user: streamerData.user,
-          };
-        }
-      } catch {
-        // Continue with partial data
-      }
-    }
+    // API returns { stream: {...} }
+    const stream = data.stream || data;
 
     return stream;
   } catch {
@@ -79,20 +56,21 @@ export async function generateMetadata({ params }: { params: Promise<{ streamId:
 
   // Use streamer's profile image or thumbnail for Open Graph
   const ogImage = stream.thumbnailUrl || stream.streamer?.user?.profileImage;
+  const streamerName = stream.streamer?.displayName || stream.streamer?.user?.username || 'Unknown';
 
   return {
     title: `${stream.title} | RydoraTV`,
-    description: stream.description || `${statusText} - Watch ${stream.streamer.username} on RydoraTV`,
+    description: stream.description || `${statusText} - Watch ${streamerName} on RydoraTV`,
     openGraph: {
       title: `${statusText}: ${stream.title}`,
-      description: stream.description || `Watch ${stream.streamer.username} on RydoraTV`,
+      description: stream.description || `Watch ${streamerName} on RydoraTV`,
       images: ogImage ? [ogImage] : [],
       type: 'video.other',
     },
     twitter: {
       card: 'summary_large_image',
       title: `${statusText}: ${stream.title}`,
-      description: stream.description || `Watch ${stream.streamer.username} on RydoraTV`,
+      description: stream.description || `Watch ${streamerName} on RydoraTV`,
       images: ogImage ? [ogImage] : [],
     },
   };
